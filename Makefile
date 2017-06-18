@@ -3,7 +3,7 @@ FLAGS = -std=c++11
 OUTPUT = diffraction
 LIBRARIES = -lSDL2 -lSDL2_gfx
 
-SOURCE = main.cpp engine.cpp room.cpp entity.cpp vector.cpp
+SOURCE = main.cpp engine.cpp room.cpp entity.cpp vector.cpp wave.cpp
 
 all : $(OUTPUT)
 
