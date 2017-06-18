@@ -1,9 +1,9 @@
 CXX = g++
 FLAGS = -std=c++11
 OUTPUT = diffraction
-LIBRARIES = -lSDL2
+LIBRARIES = -lSDL2 -lSDL2_gfx
 
-SOURCE = main.cpp engine.cpp
+SOURCE = main.cpp engine.cpp room.cpp entity.cpp vector.cpp
 
 all : $(OUTPUT)
 

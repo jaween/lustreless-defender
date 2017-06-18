@@ -3,9 +3,11 @@
 
 #include <SDL2/SDL.h>
 
+#include "room.h"
+
 class Engine {
  public:
-  Engine();
+  Engine(const Room& room);
   void run();
 
  private:
@@ -13,11 +15,10 @@ class Engine {
   int kScreenHeight= 480;
 
   SDL_Window* window;
-  SDL_Surface* screen_surface;
+  SDL_Renderer* renderer;
+  Room room;
 
   bool init();
-  void update();
-  void draw();
   void finish();
 };
 

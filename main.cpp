@@ -1,6 +1,8 @@
+#include "room.h"
 #include "engine.h"
 
 int main() {
-  Engine engine;
+  Room room;
+  Engine engine(room);
   engine.run();
 }
