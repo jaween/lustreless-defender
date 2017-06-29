@@ -38,7 +38,7 @@ void Vector::set(float x, float y) {
   this->y = y;
 }
 
-float Vector::length() {
+float Vector::length() const {
   return sqrt(x * x + y * y);
 }
 
@@ -48,7 +48,7 @@ void Vector::normalise() {
   y /= len;
 }
 
-void Vector::normalise(Vector& dest) {
+void Vector::normalise(Vector& dest) const {
   float len = length();
   dest.x = x / len;
   dest.y = y / len;
@@ -73,12 +73,21 @@ bool Vector::isClockWiseOf(const Vector& other) const {
   return (x * other.y - y * other.x) < 0;
 }
 
+void Vector::rotate(float angle) {
+  float c = cos(angle);
+  float s = sin(angle);
+  float new_x = x * c - y * s;
+  float new_y = x * s + y * c;
+  x = new_x;
+  y = new_y;
+}
+
 float Vector::dot(const Vector& other) const {
   return x * other.x + y * other.y;
 }
 
-bool Vector::operator==(const Vector& other) const {
-  return x == other.x && y == other.y;
+bool Vector::operator<(const Vector& other) const {
+  return x == other.x ? y < other.y : x < other.x;
 }
 
 Vector Vector::operator+(const Vector& other) const {
@@ -87,6 +96,10 @@ Vector Vector::operator+(const Vector& other) const {
 
 Vector Vector::operator-(const Vector& other) const {
   return Vector(x - other.x, y - other.y);
+}
+
+Vector Vector::operator-() const {
+  return Vector(-x, -y);
 }
 
 Vector Vector::operator*=(float scale) {
@@ -120,4 +133,8 @@ void Vector::move(Vector&& other) {
 void Vector::copy(const Vector& other) {
   x = other.x;
   y = other.y;
+}
+
+bool operator==(const Vector& lhs, const Vector& rhs) {
+  return lhs.x == rhs.x && lhs.y == rhs.y;
 }

@@ -3,8 +3,8 @@
 
 #include "wave.h"
 
-const float Wave::kMinArcLength = 1.0f;
-const float Wave::kAngleDelta = 1.0f * M_PI / 180;
+const float Wave::kMinArcLength = 0.0f;
+const float Wave::kAngleDelta = 0.0f * M_PI / 180;
 const float Wave::kSpeed = 1.0f;
 const float Wave::kMaxRadius = 500.0f;
 
@@ -21,6 +21,15 @@ Wave::Wave(Vector& origin,
   temp_should_destroy = false;
   radius = initial_radius;
 
+  this->start_vector.normalise();
+  this->end_vector.normalise();
+
+  // TODO(jaween): Temporary sanity check until all waves are created valid
+  if (!isValidArc(start_vector, end_vector, radius)) {
+    std::cerr << "Error: New wave was invalid, deleting self" << std::endl;
+    destroy();
+  }
+
   // TODO(jaween): Defining the edges in the wave is temp
   edges[0].set(500, 20);
   edges[1].set(400, 400);
@@ -30,15 +39,17 @@ Wave::Wave(Vector& origin,
 
   edges[4].set(60, 30);
   edges[5].set(200, 200);
+
+  edges[6].set(80, 460);
+  edges[7].set(200, 300);
 }
 
 void Wave::update() {
-  Vector dir = Vector((start_vector.angle() + end_vector.angle()) / 2);
   radius += kSpeed;
-  position = origin + radius * dir;
+  position = origin + radius * center_vector;
 
   // Computes the intersections with the walls
-  for (int i = 0; i < 6; i += 2) {
+  for (int i = 0; i < 8; i += 2) {
     Vector wall_start = edges[i];
     Vector wall_end = edges[i + 1];
     lineSegIntersection(wall_start, wall_end);
@@ -51,13 +62,14 @@ void Wave::update() {
 
 void Wave::draw(SDL_Renderer* renderer) {
   // Draws the walls
-  for (int i = 0; i < 6; i += 2) {
+  for (int i = 0; i < 8; i += 2) {
     Vector s = edges[i];
     Vector e = edges[i + 1];
     SDL_SetRenderDrawColor(renderer, 0x00, 0xCC, 0x00, 0xFF);
     SDL_RenderDrawLine(renderer, s.x, s.y, e.x, e.y);
   }
 
+  // Draws the wavefront
   arcColor(
       renderer,
       (int) origin.x,
@@ -66,6 +78,42 @@ void Wave::draw(SDL_Renderer* renderer) {
       start_vector.angle() * 180 / M_PI,
       end_vector.angle() * 180 / M_PI,
       0xFFFFFFFF);
+
+  // Origin
+  filledCircleColor(
+      renderer,
+      (int) origin.x,
+      (int) origin.y,
+      3,
+      0xFFFFFFFF);
+
+  // Line from origin to center of wavefront
+  float angle = start_vector.angle() + start_vector.angleBetween(end_vector)/2;
+  center_vector = Vector(angle);
+  center_vector.normalise();
+  /*SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
+  SDL_RenderDrawLine(
+      renderer,
+      origin.x,
+      origin.y,
+      origin.x + (center_vector * radius).x,
+      origin.y + (center_vector * radius).y);*/
+}
+
+Vector Wave::getOrigin() const {
+  return origin;
+}
+
+float Wave::getRadius() const {
+  return radius;
+}
+
+Vector Wave::getStart() const {
+  return start_vector;
+}
+
+Vector Wave::getEnd() const {
+  return end_vector;
 }
 
 void Wave::lineSegIntersection(const Vector& start, const Vector& end) {
@@ -98,24 +146,43 @@ void Wave::performArcLineSegIntersection(
     float t2) {
   // Checks if the first point is on both the line and the arc
   bool t1_valid = false;
-  Vector t1_dir;
+  Vector t1_point;
   if (t1 >= 0 && t1 <= 1) {
-    Vector point = s + t1 * (e - s);
-    t1_valid = pointWithinSector(point, origin, start_vector, end_vector);
-    t1_dir = point - origin;
+    t1_point = s + t1 * (e - s);
+    t1_valid = pointWithinSector(t1_point, origin, start_vector, end_vector);
   }
 
   // Checks if the second point is on both the line and the arc
   bool t2_valid = false;
-  Vector t2_dir;
+  Vector t2_point;
   if (t2 >= 0 && t2 <= 1) {
-    Vector point = s + t2 * (e - s);
-    t2_valid = pointWithinSector(point, origin, start_vector, end_vector);
-    t2_dir = point - origin;
+    t2_point = s + t2 * (e - s);
+    t2_valid = pointWithinSector(t2_point, origin, start_vector, end_vector);
   }
 
+  // From here onwards we can assume at least one point of intersection
   if (!(t1_valid || t2_valid)) {
     return;
+  }
+
+  // Sets the collision points and direction vectors
+  Vector t1_dir = t1_point - origin;
+  Vector t2_dir = t2_point - origin;
+  if (t1_valid && t2_valid) {
+      if (t1_dir.isClockWiseOf(t2_dir)) {
+      // Swaps collision points
+      Vector temp = t1_point;
+      t1_point = t2_point;
+      t2_point = temp;
+
+      // Swaps direction vectors
+      temp = t1_dir;
+      t1_dir = t2_dir;
+      t2_dir = temp;
+    }
+  } else {
+    t1_point = t1_valid ? t1_point : t2_point;
+    t1_dir = t1_valid ? t1_dir : t2_dir;
   }
 
   // Generates direction vectors for the two smaller arcs that this arc will
@@ -124,68 +191,139 @@ void Wave::performArcLineSegIntersection(
   Vector out_start_dir_a, out_end_dir_a;
   Vector out_start_dir_b, out_end_dir_b;
   if (t1_valid && t2_valid) {
-    if (t1_dir.isClockWiseOf(t2_dir)) {
-      // Swap
-      Vector temp = t1_dir;
-      t1_dir = t2_dir;
-      t2_dir = temp;
-    }
     cutArc(start_vector, end_vector, t1_dir, out_start_dir_a, out_end_dir_a,
         throwaway, throwaway);
     cutArc(start_vector, end_vector, t2_dir, throwaway, throwaway,
         out_start_dir_b, out_end_dir_b);
   } else {
-    Vector t_dir = t1_valid ? t1_dir : t2_dir;
-    cutArc(start_vector, end_vector, t_dir, out_start_dir_a, out_end_dir_a,
+    cutArc(start_vector, end_vector, t1_dir, out_start_dir_a, out_end_dir_a,
         out_start_dir_b, out_end_dir_b);
   }
 
-  // This portion of the arc could be on the other side of the line. We check
-  // this by casting a ray from the origin
   bool start_a_intersects = rayLineSegIntersection(origin, out_start_dir_a,
-      radius + 2 * kSpeed, s, e);
+      radius + 1 * kSpeed, s, e, throwaway);
   bool end_a_intersects = rayLineSegIntersection(origin, out_end_dir_a,
-      radius + 2 * kSpeed, s, e);
-  if (start_a_intersects && !end_a_intersects) {
-    // TODO(jaween): Clip the angle properly instead of increasing the angle
-    out_start_dir_a = Vector(out_start_dir_a.angle() + kAngleDelta);
-  } else if (end_a_intersects && !start_a_intersects) {
-    // TODO(jaween): Clip the angle properly instead of reducing the angle
-    out_end_dir_a = Vector(out_end_dir_a.angle() + kAngleDelta);
-  }
+      radius + 1 * kSpeed, s, e, throwaway);
+  bool start_b_intersects = rayLineSegIntersection(origin, out_start_dir_b,
+      radius + 1 * kSpeed, s, e, throwaway);
+  bool end_b_intersects = rayLineSegIntersection(origin, out_end_dir_b,
+      radius + 1 * kSpeed, s, e, throwaway);
+  if (t1_valid && t2_valid) {
+      // Two points  of intersection with line segement
+    reflect(origin, t1_dir, t2_dir, s, e);
+    Wave* wave = new Wave(origin, out_start_dir_a, out_end_dir_a, radius,
+        waves);
+    waves.push_back(wave);
+    start_vector = out_start_dir_b;
+    end_vector = out_end_dir_b;
+  } else {
+    if (start_a_intersects && end_b_intersects) {
+      // Stops waves from passing through walls
+      // TODO(jaween): Need to reflect the wave too
+      destroy();
+    } else if (start_a_intersects && end_a_intersects) {
+      // Single point of intersection with line segement
+      if (reflect(origin, out_start_dir_a, t1_dir, s, e)) {
+        start_vector = out_start_dir_b;
+        end_vector = out_end_dir_b;
+      }
+    } else if (start_b_intersects && end_b_intersects) {
+      // Single point of intersection with line segement
+      if (reflect(origin, t1_dir, out_end_dir_b, s, e)) {
+        start_vector = out_start_dir_a;
+        end_vector = out_end_dir_a;
+      }
+    } else {
+      // Edge case: single point of intersection near line segment tip
 
-  // Creates a new wave for the portion of the arc counter-clockwise to the
-  //  intersection
-  if (isValidArc(out_start_dir_a, out_end_dir_a, radius)) {
-    if (!(start_a_intersects && end_a_intersects)) {
-      Wave* wave = new Wave(origin, out_start_dir_a, out_end_dir_a, radius,
+      Vector closer_point = s;
+      Vector wall_dir = e - s;
+      if (wall_dir.angleBetween(t1_dir) > M_PI / 2) {
+        wall_dir = -wall_dir;
+        closer_point = e;
+      }
+
+      // Here either the A or B section of the cut will have to be shortened
+      // depending on whether angle from the origin to the intersection was
+      // clockwise or counter-clockwise
+      if (t1_dir.isClockWiseOf(wall_dir)) {
+        // Shortens the B section of the cut
+        Wave* wave = new Wave(origin, out_start_dir_a, out_end_dir_a, radius,
           waves);
-      waves.push_back(wave);
+        waves.push_back(wave);
+        start_vector = closer_point - origin;
+        end_vector = out_end_dir_b;
+
+        // TODO(jaween): Reflect the portion of B which was shortened
+        //reflect(origin, out_start_dir_b, closer_point - origin, s, e);
+      } else {
+        // Shortens the A section of the cut
+        Wave* wave = new Wave(origin, out_start_dir_b, out_end_dir_b, radius,
+          waves);
+        waves.push_back(wave);
+        start_vector = out_start_dir_a;
+        end_vector = closer_point - origin;
+
+        // TODO(jaween): Reflect the portion of A which was shortened
+        //reflect(origin, closer_point - origin, out_end_dir_a, s, e);
+      }
     }
   }
+}
 
-  // This portion of the arc could be on the other side of the line. We check
-  // this by casting a ray from the origin
-  bool start_b_intersects = rayLineSegIntersection(origin, out_start_dir_b,
-      radius + 2 * kSpeed, s, e);
-  bool end_b_intersects = rayLineSegIntersection(origin, out_end_dir_b,
-      radius + 2 * kSpeed, s, e);
-  if (start_b_intersects && !end_b_intersects) {
-  // TODO(jaween): Clip the angle properly instead of increasing the angle
-    out_start_dir_b = Vector(out_start_dir_b.angle() + kAngleDelta);
-  } else if (end_b_intersects && !start_b_intersects) {
-  // TODO(jaween): Clip the angle properly instead of reducing the angle
-    out_end_dir_b = Vector(out_end_dir_b.angle() - kAngleDelta);
+bool Wave::reflect(
+    const Vector& origin,
+    const Vector& dir_start,
+    const Vector& dir_end,
+    const Vector& line_seg_start,
+    const Vector& line_seg_end) {
+  float ninety = 90 * M_PI / 180;
+  float one_eighty = 180 * M_PI / 180;
+
+  Vector normal = Vector((line_seg_end - line_seg_start).angle() + ninety);
+  Vector dir_start_reverse = -dir_start;
+  Vector dir_end_reverse = -dir_end;
+  float start_incidence = dir_start_reverse.angleBetween(normal);
+  float end_incidence = dir_end_reverse.angleBetween(normal);
+  if (!dir_start_reverse.isClockWiseOf(normal)) {
+    start_incidence = -start_incidence;
+  }
+  if (!dir_end_reverse.isClockWiseOf(normal)) {
+    end_incidence = -end_incidence;
   }
 
-  // Shortens this wave clockwise up to the point of intersection
-  if (isValidArc(out_start_dir_b, out_end_dir_b, radius)
-      && !(start_b_intersects && end_b_intersects)) {
-  start_vector = out_start_dir_b;
-  end_vector = out_end_dir_b;
-  } else {
-    destroy();
+  Vector point;
+  Vector line_dir = line_seg_start - line_seg_end;
+  line_dir.normalise();
+  Vector ray_dir = -normal;
+  ray_dir.normalise();
+  if (!rayLineIntersection(origin, ray_dir, line_seg_start, line_dir, point)) {
+    std::cerr << "Error: Can not reflect, no intersection:" << std::endl;
+    std::clog << "  Origin: " << origin << ", ray_dir " << (ray_dir)
+        << ", line point " << line_seg_start << ", line dir " << line_dir
+        << std::endl;
+    return false;
   }
+
+  Vector to_line = point - origin;
+  Vector dir_to_line;
+  to_line.normalise(dir_to_line);
+  Vector reflection_origin = origin + dir_to_line * 2 * (to_line).length();
+
+  Vector reflection_start = dir_end_reverse;
+  reflection_start.rotate(-2 * end_incidence);
+  Vector reflection_end = dir_start_reverse;
+  reflection_end.rotate(-2 * start_incidence);
+
+  Wave* reflection = new Wave(
+      reflection_origin,
+      reflection_start,
+      reflection_end,
+      radius,
+      waves);
+  waves.push_back(reflection);
+
+  return true;
 }
 
 bool Wave::isValidArc(
@@ -237,17 +375,23 @@ bool Wave::lineSegLineSegIntersection(
     const Vector& a,
     const Vector& b,
     const Vector& p,
-    const Vector& q) {
+    const Vector& q,
+    Vector& out) {
   // Based on Gavin's answer here: https://stackoverflow.com/a/1968345
   Vector s1 = b - a;
   Vector s2 = q - p;
 
-  float s, t;
+  float ab_parameter, pq_parameter;
   float denominator = -s2.x * s1.y + s1.x * s2.y;
-  s = (-s1.y * (a.x - p.x) + s1.x * (a.y - p.y)) / denominator;
-  t = ( s2.x * (a.y - p.y) - s2.y * (a.x - p.x)) / denominator;
+  pq_parameter = (-s1.y * (a.x - p.x) + s1.x * (a.y - p.y)) / denominator;
+  ab_parameter = ( s2.x * (a.y - p.y) - s2.y * (a.x - p.x)) / denominator;
 
-  return s >= 0 && s <= 1 && t >= 0 && t <= 1;
+  if (ab_parameter >= 0 && ab_parameter <= 1 &&
+      pq_parameter >= 0 && pq_parameter <= 1) {
+    out = p + pq_parameter * (q - p);
+    return true;
+  }
+  return false;
 }
 
 bool Wave::rayLineSegIntersection(
@@ -255,9 +399,32 @@ bool Wave::rayLineSegIntersection(
     const Vector& dir,
     float length,
     const Vector& a,
-    const Vector& b) {
+    const Vector& b,
+    Vector& out) {
   Vector radius_ray_end = origin + length * dir;
-  return lineSegLineSegIntersection(origin, radius_ray_end, a, b);
+  return lineSegLineSegIntersection(origin, radius_ray_end, a, b, out);
+}
+
+bool Wave::rayLineIntersection(
+    const Vector& ray_origin,
+    const Vector& ray_dir,
+    const Vector& line_point,
+    const Vector& line_dir,
+    Vector& out) {
+  float ray_radius = line_point.y * line_dir.x + line_dir.y * ray_origin.x
+      - line_point.x * line_dir.y
+      - ray_origin.y * line_dir.x / (ray_dir.y * line_dir.x
+      - ray_dir.x * line_dir.y);
+
+  // TODO(jaween): Why does -line_dir give an incorrect result?
+  if (ray_radius < 0) {
+    //return false;
+  }
+
+  float line_parameter = (ray_origin.x + ray_radius * ray_dir.x - line_point.x)
+      / line_dir.x;
+  out = line_point + line_parameter * line_dir;
+  return true;
 }
 
 float Wave::getArcLength(const Vector& start, const Vector& end, float radius) {
@@ -268,8 +435,8 @@ void Wave::printArc(const Vector& s, const Vector& e) {
   float angle_s = s.angle() * 180 / M_PI;
   float angle_e = e.angle() * 180 / M_PI;
   float spread = s.angleBetween(e) * 180 / M_PI;
-  std::clog << " Arc (" << angle_s << ", " << angle_e << ") spread of " 
-      << spread << std::endl;
+  std::clog << " Arc <" << angle_s << ", " << angle_e << ">(spread:"
+      << spread << ")" << std::endl;
 }
 
 void Wave::destroy() {
@@ -282,4 +449,11 @@ void Wave::destroy() {
 
 bool Wave::tempShouldDestroy() {
   return temp_should_destroy;
+}
+
+bool operator==(const Wave& lhs, const Wave& rhs) {
+  return (lhs.getOrigin() == rhs.getOrigin())
+      && (lhs.getRadius() == rhs.getRadius())
+      && (lhs.getStart() == rhs.getStart())
+      && (lhs.getEnd() == rhs.getEnd());
 }

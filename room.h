@@ -16,6 +16,9 @@ class Room {
  private:
   int angle;
   std::vector<Wave*> waves;
+
+  void mergeWaves();
+  void printWaves();
 };
 
 #endif // ROOM_H_
