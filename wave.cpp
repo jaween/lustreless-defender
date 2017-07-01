@@ -12,21 +12,21 @@ Wave::Wave(Vector& origin,
     const Vector& start_vector,
     const Vector& end_vector,
     float initial_radius,
-    std::vector<Wave*>& waves)
+    std::vector<Wave*>& waves,
+    int age)
     : Entity(origin),
       origin(origin),
       start_vector(start_vector),
       end_vector(end_vector),
-      waves(waves) {
+      waves(waves),
+      age(age) {
   temp_should_destroy = false;
   radius = initial_radius;
-
   this->start_vector.normalise();
   this->end_vector.normalise();
 
   // TODO(jaween): Temporary sanity check until all waves are created valid
   if (!isValidArc(start_vector, end_vector, radius)) {
-    std::cerr << "Error: New wave was invalid, deleting self" << std::endl;
     destroy();
   }
 
@@ -45,8 +45,12 @@ Wave::Wave(Vector& origin,
 }
 
 void Wave::update() {
+  float angle = start_vector.angle() + start_vector.angleBetween(end_vector)/2;
+  center_dir = Vector(angle);
+  center_dir.normalise();
+
   radius += kSpeed;
-  position = origin + radius * center_vector;
+  position = origin + radius * center_dir;
 
   // Computes the intersections with the walls
   for (int i = 0; i < 8; i += 2) {
@@ -58,6 +62,8 @@ void Wave::update() {
   if (!isValidArc(start_vector, end_vector, radius) || radius > kMaxRadius) {
     destroy();
   }
+
+  age++;
 }
 
 void Wave::draw(SDL_Renderer* renderer) {
@@ -70,14 +76,15 @@ void Wave::draw(SDL_Renderer* renderer) {
   }
 
   // Draws the wavefront
-  arcColor(
+  float alpha = 255 - 255 * (radius / kMaxRadius);
+  arcRGBA(
       renderer,
       (int) origin.x,
       (int) origin.y,
       radius,
       start_vector.angle() * 180 / M_PI,
       end_vector.angle() * 180 / M_PI,
-      0xFFFFFFFF);
+      0xFF, 0xFF, 0xFF, alpha);
 
   // Origin
   filledCircleColor(
@@ -88,16 +95,13 @@ void Wave::draw(SDL_Renderer* renderer) {
       0xFFFFFFFF);
 
   // Line from origin to center of wavefront
-  float angle = start_vector.angle() + start_vector.angleBetween(end_vector)/2;
-  center_vector = Vector(angle);
-  center_vector.normalise();
   /*SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
   SDL_RenderDrawLine(
       renderer,
       origin.x,
       origin.y,
-      origin.x + (center_vector * radius).x,
-      origin.y + (center_vector * radius).y);*/
+      origin.x + (center_dir * radius).x,
+      origin.y + (center_dir * radius).y);*/
 }
 
 Vector Wave::getOrigin() const {
@@ -136,10 +140,17 @@ void Wave::lineSegIntersection(const Vector& start, const Vector& end) {
   float t1 = (-B + sqrt(determinant)) / (2 * A);
   float t2 = (-B - sqrt(determinant)) / (2 * A);
 
-  performArcLineSegIntersection(start, end, t1, t2);
+  bool arc_line_seg_intersection =
+      performArcLineSegIntersection(start, end, t1, t2);
+
+  // Given that the arc didn't intersect the line, checks if the arc passed
+  // through the line
+  if (!arc_line_seg_intersection) {
+    checkIfMovedThroughWall(start, end);
+  }
 }
 
-void Wave::performArcLineSegIntersection(
+bool Wave::performArcLineSegIntersection(
     const Vector& s,
     const Vector& e,
     float t1,
@@ -162,7 +173,7 @@ void Wave::performArcLineSegIntersection(
 
   // From here onwards we can assume at least one point of intersection
   if (!(t1_valid || t2_valid)) {
-    return;
+    return false;
   }
 
   // Sets the collision points and direction vectors
@@ -212,16 +223,12 @@ void Wave::performArcLineSegIntersection(
       // Two points  of intersection with line segement
     reflect(origin, t1_dir, t2_dir, s, e);
     Wave* wave = new Wave(origin, out_start_dir_a, out_end_dir_a, radius,
-        waves);
+        waves, age);
     waves.push_back(wave);
     start_vector = out_start_dir_b;
     end_vector = out_end_dir_b;
   } else {
-    if (start_a_intersects && end_b_intersects) {
-      // Stops waves from passing through walls
-      // TODO(jaween): Need to reflect the wave too
-      destroy();
-    } else if (start_a_intersects && end_a_intersects) {
+    if (start_a_intersects && end_a_intersects) {
       // Single point of intersection with line segement
       if (reflect(origin, out_start_dir_a, t1_dir, s, e)) {
         start_vector = out_start_dir_b;
@@ -236,6 +243,8 @@ void Wave::performArcLineSegIntersection(
     } else {
       // Edge case: single point of intersection near line segment tip
 
+      // Flips the wall_dir vector such that the angle between it and t1_dir is
+      // minimised
       Vector closer_point = s;
       Vector wall_dir = e - s;
       if (wall_dir.angleBetween(t1_dir) > M_PI / 2) {
@@ -249,7 +258,7 @@ void Wave::performArcLineSegIntersection(
       if (t1_dir.isClockWiseOf(wall_dir)) {
         // Shortens the B section of the cut
         Wave* wave = new Wave(origin, out_start_dir_a, out_end_dir_a, radius,
-          waves);
+          waves, age);
         waves.push_back(wave);
         start_vector = closer_point - origin;
         end_vector = out_end_dir_b;
@@ -259,7 +268,7 @@ void Wave::performArcLineSegIntersection(
       } else {
         // Shortens the A section of the cut
         Wave* wave = new Wave(origin, out_start_dir_b, out_end_dir_b, radius,
-          waves);
+          waves, age);
         waves.push_back(wave);
         start_vector = out_start_dir_a;
         end_vector = closer_point - origin;
@@ -269,6 +278,8 @@ void Wave::performArcLineSegIntersection(
       }
     }
   }
+
+  return true;
 }
 
 bool Wave::reflect(
@@ -320,7 +331,8 @@ bool Wave::reflect(
       reflection_start,
       reflection_end,
       radius,
-      waves);
+      waves,
+      0);
   waves.push_back(reflection);
 
   return true;
@@ -431,6 +443,18 @@ float Wave::getArcLength(const Vector& start, const Vector& end, float radius) {
   return radius * start.angleBetween(end);
 }
 
+void Wave::checkIfMovedThroughWall(const Vector& s, const Vector& e) {
+  Vector throwaway;
+  bool prev_center_intersects = rayLineSegIntersection(origin, center_dir,
+      radius - 2 * kSpeed, s, e, throwaway);
+  bool center_intersects = rayLineSegIntersection(origin, center_dir,
+      radius + 0 * kSpeed, s, e, throwaway);
+  if (center_intersects && !prev_center_intersects && age > 1) {
+    reflect(origin, start_vector, end_vector, s, e);
+    destroy();
+  }
+}
+
 void Wave::printArc(const Vector& s, const Vector& e) {
   float angle_s = s.angle() * 180 / M_PI;
   float angle_e = e.angle() * 180 / M_PI;
@@ -444,6 +468,7 @@ void Wave::destroy() {
   // TODO(jaween): Implement a way to acually destroy a wave from here
   start_vector.set(0, 0);
   end_vector.set(0, 0);
+  radius = 0;
   temp_should_destroy = true;
 }
 

@@ -19,8 +19,10 @@ void Engine::run() {
     // Input handling
     SDL_Event event;
     while (SDL_PollEvent(&event) > 0) {
-      if (event.type == SDL_QUIT) {
-        keepRunning = false;
+      switch (event.type) {
+        case SDL_QUIT:
+          keepRunning = false;
+          break;
       }
     }
 

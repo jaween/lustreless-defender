@@ -12,7 +12,8 @@ class Wave : public Entity {
       const Vector& start_vector,
       const Vector& end_vector,
       float initial_radius,
-      std::vector<Wave*>& waves);
+      std::vector<Wave*>& waves,
+      int age);
   virtual void update();
   virtual void draw(SDL_Renderer* renderer);
   bool tempShouldDestroy();
@@ -20,6 +21,7 @@ class Wave : public Entity {
   float getRadius() const;
   Vector getStart() const;
   Vector getEnd() const;
+  void checkIfMovedThroughWall(const Vector& s, const Vector& e);
 
  private:
   static const float kMinArcLength;
@@ -31,10 +33,11 @@ class Wave : public Entity {
   Vector origin;
   Vector start_vector;
   Vector end_vector;
-  Vector center_vector;
+  Vector center_dir;
   float radius;
   Vector edges[8];
   bool temp_should_destroy;
+  int age;
 
   // Helper functions
   static float getArcLength(const Vector& start, const Vector& end,
@@ -47,7 +50,7 @@ class Wave : public Entity {
   static void printArc(const Vector& s, const Vector& e);
 
   void lineSegIntersection(const Vector& start, const Vector& end);
-  void performArcLineSegIntersection(const Vector& s, const Vector& e, float t1,
+  bool performArcLineSegIntersection(const Vector& s, const Vector& e, float t1,
       float t2);
   void cutArc(const Vector& start_dir, const Vector& end_dir,
       const Vector& cut_dir, Vector& out_start_dir_a, Vector& out_end_dir_a,

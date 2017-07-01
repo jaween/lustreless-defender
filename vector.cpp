@@ -102,6 +102,18 @@ Vector Vector::operator-() const {
   return Vector(-x, -y);
 }
 
+Vector Vector::operator+=(const Vector& other) {
+  x += other.x;
+  y += other.y;
+  return *this;
+}
+
+Vector Vector::operator-=(const Vector& other) {
+  x -= other.x;
+  y -= other.y;
+  return *this;
+}
+
 Vector Vector::operator*=(float scale) {
   x *= scale;
   y *= scale;

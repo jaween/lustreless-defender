@@ -20,7 +20,7 @@ void Room::update() {
     Vector origin(320, 240);
     Vector s(angle * M_PI / 180);
     Vector e((angle + 100) * M_PI / 180);
-    waves.push_back(new Wave(origin, s, e, 0, waves));
+    waves.push_back(new Wave(origin, s, e, 0, waves, 0));
   }
   angle += 1.0f;
 
@@ -40,7 +40,7 @@ void Room::draw(SDL_Renderer* renderer) {
   screen_rect.x = 0;
   screen_rect.y = 0;
   screen_rect.w = 640;
-  screen_rect.h = 640;
+  screen_rect.h = 480;
 
   SDL_SetRenderDrawColor(renderer, 0x10, 0x10, 0x10, 0xFF);
   SDL_RenderFillRect(
@@ -93,7 +93,7 @@ void Room::mergeWaves() {
 
       // TODO(jaween): Reuse old waves rather than allocating a new one
       Wave* new_wave = new Wave(new_origin, new_start, new_end,
-          wave->getRadius(), waves);
+          wave->getRadius(), waves, 0);
 
       waves.erase(waves.begin() + i - 1);
       waves.erase(waves.begin() + i - 1);
