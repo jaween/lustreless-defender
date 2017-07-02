@@ -1,7 +1,7 @@
 #ifndef ENTITY_H_
 #define ENTITY_H_
 
-#include <SDL2/SDL.h>
+#include "SDL_gpu.h"
 
 #include "vector.h"
 
@@ -9,7 +9,7 @@ class Entity {
  public:
   Entity(Vector& position);
   virtual void update();
-  virtual void draw(SDL_Renderer* renderer) = 0;
+  virtual void draw(GPU_Target* gpu_target) = 0;
 
  protected:
   Vector position;

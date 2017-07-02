@@ -35,20 +35,12 @@ void Room::update() {
   mergeWaves();
 }
 
-void Room::draw(SDL_Renderer* renderer) {
-  SDL_Rect screen_rect;
-  screen_rect.x = 0;
-  screen_rect.y = 0;
-  screen_rect.w = 640;
-  screen_rect.h = 480;
-
-  SDL_SetRenderDrawColor(renderer, 0x10, 0x10, 0x10, 0xFF);
-  SDL_RenderFillRect(
-      renderer,
-      &screen_rect);
+void Room::draw(GPU_Target* gpu_target) {
+  SDL_Color color = { 0x00, 0x00, 0x00, 0xFF };
+  GPU_ClearColor(gpu_target, color);
 
   for (int i = 0; i < waves.size(); i++) {
-    waves.at(i)->draw(renderer);
+    waves.at(i)->draw(gpu_target);
   }
 }
 

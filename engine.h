@@ -1,7 +1,7 @@
 #ifndef ENGINE_H_
 #define ENGINE_H_
 
-#include <SDL2/SDL.h>
+#include "SDL_gpu.h"
 
 #include "room.h"
 
@@ -14,8 +14,7 @@ class Engine {
   int kScreenWidth = 640;
   int kScreenHeight= 480;
 
-  SDL_Window* window;
-  SDL_Renderer* renderer;
+  GPU_Target* window;
   Room room;
 
   bool init();

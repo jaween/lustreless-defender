@@ -15,7 +15,7 @@ class Wave : public Entity {
       std::vector<Wave*>& waves,
       int age);
   virtual void update();
-  virtual void draw(SDL_Renderer* renderer);
+  virtual void draw(GPU_Target* gpu_target);
   bool tempShouldDestroy();
   Vector getOrigin() const;
   float getRadius() const;

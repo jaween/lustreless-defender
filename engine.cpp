@@ -27,9 +27,9 @@ void Engine::run() {
     }
 
     room.update();
-    room.draw(renderer);
+    room.draw(window);
 
-    SDL_RenderPresent(renderer);
+    GPU_Flip(window);
 
     SDL_Delay(10);
   }
@@ -38,20 +38,11 @@ void Engine::run() {
 }
 
 bool Engine::init() {
-  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-    std::cerr << "Failed to initialise SDL: " << SDL_GetError() << std::endl;
-    return false;
-  }
+  GPU_SetDebugLevel(GPU_DEBUG_LEVEL_MAX);
 
-  int result = SDL_CreateWindowAndRenderer(
-      kScreenWidth,
-      kScreenHeight,
-      0,
-      &window,
-      &renderer);
-
-  if (result != 0) {
-    std::cerr << "Failed to create window: " << SDL_GetError() << std::endl;
+  window = GPU_Init(kScreenWidth, kScreenHeight, GPU_DEFAULT_INIT_FLAGS);
+  if (window == NULL) {
+    std::cerr << "Failed to initialise SDL_gpu" << std::endl;
     return false;
   }
 
@@ -59,15 +50,7 @@ bool Engine::init() {
 }
 
 void Engine::finish() {
-  if (renderer) {
-    SDL_DestroyRenderer(renderer);
-  }
-
-  if (window) {
-    SDL_DestroyWindow(window);
-  }
-
-  SDL_Quit();
+  GPU_Quit();
 
   std::clog << "Engine ended" << std::endl;
 }

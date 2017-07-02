@@ -1,4 +1,3 @@
-#include <SDL2/SDL2_gfxPrimitives.h>
 #include <algorithm>
 
 #include "wave.h"
@@ -66,42 +65,53 @@ void Wave::update() {
   age++;
 }
 
-void Wave::draw(SDL_Renderer* renderer) {
+void Wave::draw(GPU_Target* gpu_target) {
   // Draws the walls
   for (int i = 0; i < 8; i += 2) {
     Vector s = edges[i];
     Vector e = edges[i + 1];
-    SDL_SetRenderDrawColor(renderer, 0x00, 0xCC, 0x00, 0xFF);
-    SDL_RenderDrawLine(renderer, s.x, s.y, e.x, e.y);
+
+    SDL_Color edge_colour = { 0x00, 0xCC, 0x00, 0xFF };
+    GPU_Line(gpu_target, s.x, s.y, e.x, e.y, edge_colour);
   }
 
   // Draws the wavefront
-  float alpha = 255 - 255 * (radius / kMaxRadius);
-  arcRGBA(
-      renderer,
+  uint8_t alpha = 255 - 255 * (radius / kMaxRadius);
+  SDL_Color arc_colour = { 0xFF, 0xFF, 0xFF, alpha };
+  float spread = start_vector.angleBetween(end_vector) * 180 / M_PI;
+  float start_angle = start_vector.angle() * 180 / M_PI;
+  /*if (end_angle < start_angle) {
+    float temp = end_angle;
+    end_angle = start_angle;
+    start_angle = temp;
+  }*/
+  GPU_Arc(
+      gpu_target,
       (int) origin.x,
       (int) origin.y,
       radius,
-      start_vector.angle() * 180 / M_PI,
-      end_vector.angle() * 180 / M_PI,
-      0xFF, 0xFF, 0xFF, alpha);
+      start_angle,
+      start_angle + spread,
+      arc_colour);
 
   // Origin
-  filledCircleColor(
-      renderer,
+  SDL_Color origin_colour = { 0xFF, 0xFF, 0xFF, 0xFF };
+  GPU_CircleFilled(
+      gpu_target,
       (int) origin.x,
       (int) origin.y,
       3,
-      0xFFFFFFFF);
+      origin_colour);
 
   // Line from origin to center of wavefront
-  /*SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
-  SDL_RenderDrawLine(
-      renderer,
+  /*SDL_Color ray_colour = { 0xFF, 0x00, 0x00, alpha };
+  GPU_Line(
+      gpu_target,
       origin.x,
       origin.y,
       origin.x + (center_dir * radius).x,
-      origin.y + (center_dir * radius).y);*/
+      origin.y + (center_dir * radius).y,
+      ray_colour);*/
 }
 
 Vector Wave::getOrigin() const {
