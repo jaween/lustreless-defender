@@ -1,6 +1,10 @@
+#include "GL/glew.h"
 #include <iostream>
 
 #include "engine.h"
+
+const int Engine::kScreenWidth = 640;
+const int Engine::kScreenHeight = 480;
 
 Engine::Engine(const Room& room)
     : room(room) {
@@ -42,7 +46,14 @@ bool Engine::init() {
 
   window = GPU_Init(kScreenWidth, kScreenHeight, GPU_DEFAULT_INIT_FLAGS);
   if (window == NULL) {
-    std::cerr << "Failed to initialise SDL_gpu" << std::endl;
+    std::cerr << "Failed to initialise SDL_gpu: " << std::endl;
+    return false;
+  }
+
+  // Initialises GLEW (loads OpenGL extension functions that we can then call)
+  glewExperimental = GL_TRUE;
+  if (glewInit() != GLEW_OK) {
+    GPU_LogError("Failed to initialise GLEW\n");
     return false;
   }
 

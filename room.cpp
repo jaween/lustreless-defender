@@ -7,12 +7,39 @@
 
 void Room::init() {
   angle = 20;
+
+  background = new Image("assets/sprites/triangle.png");
+  highlight_shader = new HighlightShader();
+
+  unsigned int first = 0x3299CC;
+  unsigned int second = 0xFF0000;
+  SDL_Color first_colour = {
+      (uint8_t) (first >> 16),
+      (uint8_t) ((first << 16) >> 24),
+      (uint8_t) ((first << 24) >> 24),
+      (uint8_t) (255)
+  };
+  SDL_Color second_colour = {
+      (uint8_t) (second >> 16),
+      (uint8_t) ((second << 16) >> 24),
+      (uint8_t) ((second << 24) >> 24),
+      (uint8_t) (255)
+  };
+
+  light_count = 2;
+  for (int i = 0; i < light_count; i++) {
+    SDL_Color colour = { 1, 1, 1, 1 };
+    Light* light = new Light(colour);
+    lights.push_back(light);
+  }
+  lights.at(0)->setColour(first_colour);
+  lights.at(1)->setColour(second_colour);
 }
 
 void Room::update() {
   int current_waves_size = waves.size();
   for (int i = 0; i < current_waves_size; i++) {
-    waves.at(i)->update();
+    //waves.at(i)->update();
   }
 
   // Temporary wave creation for testing multiple angles
@@ -20,7 +47,7 @@ void Room::update() {
     Vector origin(320, 240);
     Vector s(angle * M_PI / 180);
     Vector e((angle + 100) * M_PI / 180);
-    waves.push_back(new Wave(origin, s, e, 0, waves, 0));
+    //waves.push_back(new Wave(origin, s, e, 0, waves, 0));
   }
   angle += 1.0f;
 
@@ -32,15 +59,37 @@ void Room::update() {
     }
   }
 
-  mergeWaves();
+  //mergeWaves();
+
+  std::vector<Image*> images;
+  images.push_back(background);
+  for (int i = 0; i < lights.size(); i++) {
+    lights.at(i)->setObjects(images);
+  }
+
+  Vector pos0 = Vector();
+  pos0.x = 320 + 110 * cos(-angle * 1.1 * M_PI / 180);
+  pos0.y = 240 + 110 * sin(-angle * 1.1 * M_PI / 180);
+  lights.at(0)->setPosition(pos0);
+  Vector pos1 = Vector();
+  pos1.x = 320 + 110 * cos(angle * M_PI / 180);
+  pos1.y = 240 + 110 * sin(angle * M_PI / 180);
+  lights.at(1)->setPosition(pos1);
 }
 
 void Room::draw(GPU_Target* gpu_target) {
   SDL_Color color = { 0x00, 0x00, 0x00, 0xFF };
   GPU_ClearColor(gpu_target, color);
 
+  for (int i = 0; i < lights.size(); i++) {
+    lights.at(i)->draw(gpu_target);
+  }
+
+  highlight_shader->setLights(lights);
+  background->draw(gpu_target, 320, 240, highlight_shader);
+
   for (int i = 0; i < waves.size(); i++) {
-    waves.at(i)->draw(gpu_target);
+    //waves.at(i)->draw(gpu_target);
   }
 }
 
@@ -50,6 +99,16 @@ void Room::finish() {
     delete wave;
   }
   waves.clear();
+
+  while (lights.size() > 0) {
+    Light* light = lights.at(lights.size() - 1);
+    std::clog << "Lights size is " << lights.size() << std::endl;
+    delete light;
+  }
+  lights.clear();
+
+  delete background;
+  delete highlight_shader;
 }
 
 void Room::mergeWaves() {

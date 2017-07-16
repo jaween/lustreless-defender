@@ -4,6 +4,10 @@
 #include "SDL_gpu.h"
 #include <vector>
 
+#include "highlight_shader.h"
+#include "image.h"
+#include "light.h"
+#include "tile.h"
 #include "wave.h"
 
 class Room {
@@ -16,6 +20,10 @@ class Room {
  private:
   int angle;
   std::vector<Wave*> waves;
+  Image* background;
+  int light_count;
+  std::vector<Light*> lights;
+  HighlightShader* highlight_shader;
 
   void mergeWaves();
   void printWaves();

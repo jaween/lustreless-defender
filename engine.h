@@ -11,8 +11,8 @@ class Engine {
   void run();
 
  private:
-  int kScreenWidth = 640;
-  int kScreenHeight= 480;
+  static const int kScreenWidth;
+  static const int kScreenHeight;
 
   GPU_Target* window;
   Room room;
