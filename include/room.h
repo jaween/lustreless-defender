@@ -7,7 +7,6 @@
 #include "highlight_shader.h"
 #include "image.h"
 #include "light.h"
-#include "tile.h"
 #include "wave.h"
 
 class Room {
