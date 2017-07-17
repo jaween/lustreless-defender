@@ -5,9 +5,9 @@ BUILD_DIR = build
 OUTPUT = bin/diffraction
 
 SOURCE_DIR = src
-SOURCES = $(wildcard $(SOURCE_DIR)/*.cpp)
+SOURCES = $(wildcard $(SOURCE_DIR)/*.cc)
 
-OBJECTS = $(addprefix $(BUILD_DIR)/,$(SOURCES:$(SOURCE_DIR)/%.cpp=%.o))
+OBJECTS = $(addprefix $(BUILD_DIR)/,$(SOURCES:$(SOURCE_DIR)/%.cc=%.o))
 
 LIBRARIES = -lSDL2 -lSDL2_gpu -lGL -lGLEW
 LINKER_FLAGS = -Wl,-rpath,/usr/local/lib
@@ -22,7 +22,7 @@ all : $(OUTPUT)
 $(OUTPUT) : $(OBJECTS)
 	$(CXX) -o $@ $(OBJECTS) $(INCLUDE_FLAGS) $(LINKER_FLAGS) $(LIBRARIES)
 
-$(BUILD_DIR)/%.o : $(SOURCE_DIR)/%.cpp $(BUILD_DIR)
+$(BUILD_DIR)/%.o : $(SOURCE_DIR)/%.cc $(BUILD_DIR)
 	$(CXX) -o $@ -c $< $(FLAGS) $(INCLUDE_FLAGS)
 
 $(BUILD_DIR) :
