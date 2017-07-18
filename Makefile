@@ -22,8 +22,10 @@ all : $(OUTPUT)
 $(OUTPUT) : $(OBJECTS)
 	$(CXX) -o $@ $(OBJECTS) $(INCLUDE_FLAGS) $(LINKER_FLAGS) $(LIBRARIES)
 
-$(BUILD_DIR)/%.o : $(SOURCE_DIR)/%.cc $(BUILD_DIR)
+$(BUILD_DIR)/%.o : $(SOURCE_DIR)/%.cc
 	$(CXX) -o $@ -c $< $(FLAGS) $(INCLUDE_FLAGS)
+
+$(OBJECTS) : | $(BUILD_DIR)
 
 $(BUILD_DIR) :
 	mkdir -p $(BUILD_DIR)
