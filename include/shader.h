@@ -2,6 +2,7 @@
 #define SHADER_H_
 
 #include "GL/glew.h"
+#include "glm/glm.hpp"
 #include <string>
 #include <vector>
 
@@ -15,8 +16,8 @@ class Shader {
   ~Shader();
   virtual void activate();
   virtual void deactivate();
-  void setMvpMatrix(float* mvp_matrix);
-  void setModelMatrix(float* model_matrix);
+  void setMvpMatrix(glm::mat4 mvp_matrix);
+  void setModelMatrix(glm::mat4 model_matrix);
 
  private:
   static const std::string kPositionName;

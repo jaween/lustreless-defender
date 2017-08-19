@@ -1,5 +1,7 @@
-#include <iostream>
 #include "SDL_gpu.h"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include <iostream>
 #include <string>
 
 #include "shader.h"
@@ -46,15 +48,17 @@ void Shader::deactivate() {
   glUseProgram(0);
 }
 
-void Shader::setMvpMatrix(float* mvp_matrix) {
+void Shader::setMvpMatrix(glm::mat4 mvp_matrix) {
   activate();
-  GPU_SetUniformMatrixfv(mvp_matrix_location, 1, 4, 4, false, mvp_matrix);
+  GPU_SetUniformMatrixfv(mvp_matrix_location, 1, 4, 4, false,
+      glm::value_ptr(mvp_matrix));
   deactivate();
 }
 
 // TODO(jaween): Make this setInverseVpMatrix()
-void Shader::setModelMatrix(float* model_matrix) {
+void Shader::setModelMatrix(glm::mat4 model_matrix) {
   activate();
-  GPU_SetUniformMatrixfv(model_matrix_location, 1, 4, 4, false, model_matrix);
+  GPU_SetUniformMatrixfv(model_matrix_location, 1, 4, 4, false,
+      glm::value_ptr(model_matrix));
   deactivate();
 }

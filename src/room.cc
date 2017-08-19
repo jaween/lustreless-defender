@@ -8,7 +8,7 @@
 void Room::init() {
   angle = 20;
 
-  background = new Image("assets/sprites/triangle.png");
+  image = new Image("assets/sprites/non_convex.png");
   highlight_shader = new HighlightShader();
 
   unsigned int first = 0x3299CC;
@@ -62,18 +62,18 @@ void Room::update() {
   //mergeWaves();
 
   std::vector<Image*> images;
-  images.push_back(background);
+  images.push_back(image);
   for (int i = 0; i < lights.size(); i++) {
     lights.at(i)->setObjects(images);
   }
 
   Vector pos0 = Vector();
-  pos0.x = 320 + 110 * cos(-angle * 1.1 * M_PI / 180);
-  pos0.y = 240 + 110 * sin(-angle * 1.1 * M_PI / 180);
+  pos0.x = 110 * cos(-angle * 1.1 * M_PI / 180);
+  pos0.y = 110 * sin(-angle * 1.1 * M_PI / 180);
   lights.at(0)->setPosition(pos0);
   Vector pos1 = Vector();
-  pos1.x = 320 + 110 * cos(angle * M_PI / 180);
-  pos1.y = 240 + 110 * sin(angle * M_PI / 180);
+  pos1.x = 110 * cos(angle * M_PI / 180);
+  pos1.y = 110 * sin(angle * M_PI / 180);
   lights.at(1)->setPosition(pos1);
 }
 
@@ -86,7 +86,11 @@ void Room::draw(GPU_Target* gpu_target) {
   }
 
   highlight_shader->setLights(lights);
-  background->draw(gpu_target, 320, 240, highlight_shader);
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+  image->draw(gpu_target, 0, 0);
+  glDisable(GL_BLEND);
 
   for (int i = 0; i < waves.size(); i++) {
     //waves.at(i)->draw(gpu_target);
@@ -107,7 +111,7 @@ void Room::finish() {
   }
   lights.clear();
 
-  delete background;
+  delete image;
   delete highlight_shader;
 }
 

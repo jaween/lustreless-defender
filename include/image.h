@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "camera.h"
 #include "texture_shader.h"
 
 /**
@@ -18,9 +19,10 @@ class Image
   Image(std::string filename);
   ~Image();
   void draw(GPU_Target* gpu_target, float x, float y, Shader* shader=NULL,
-      float* matrix = NULL);
+      Camera* camera = NULL, bool bind_texture = true);
   void draw(GPU_Target* gpu_target, float x, float y, uint32_t width,
-      uint32_t height, Shader* shader=NULL, float* matrix = NULL);
+      uint32_t height, Shader* shader=NULL, Camera* camera = NULL,
+      bool bind_texture = true);
   GLuint getTexture();
   uint32_t getWidth() const;
   uint32_t getHeight() const;
@@ -35,11 +37,13 @@ class Image
   GLuint texture;
   GLenum texture_target;
   TextureShader texture_shader;
+  Camera* default_camera;
 
   void init();
   void setTextureData(uint32_t width, uint32_t height, uint8_t* data);
   void drawInternal(GPU_Target* gpu_target, float x, float y, uint32_t width,
-      uint32_t height, Shader* shader=NULL, float* matrix = NULL);
+      uint32_t height, Shader* shader=NULL, Camera* camera = NULL,
+      bool bind_texture = true);
 };
 
 #endif // MESH_H_

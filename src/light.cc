@@ -1,3 +1,5 @@
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 #include <iostream>
 
 #include "light.h"
@@ -16,6 +18,10 @@ Light::Light(SDL_Color colour) {
   occlusion_mask_shader = new OcclusionMaskShader();
   shadow_map_shader = new ShadowMapShader(size);
   shadow_mask_shader = new ShadowMaskShader(colour, size);
+
+  // Internal camera is used to position the light source in the center of
+  // the viewing area as required by the lighting algorithm
+  internal_camera = new Camera(0,0);
 
   // Framebuffer is used as a destination for each intermediate stage of
   // lighting
@@ -39,13 +45,20 @@ Light::~Light() {
   delete occlusion_mask;
   delete shadow_map;
   delete shadow_mask;
+  delete internal_camera;
 }
 
 void Light::draw(GPU_Target* gpu_target) {
+  // Sets up the projection matrix for the camera
+  internal_camera->setOrthographic(
+      -gpu_target->w/2.0f,
+       gpu_target->w/2.0f,
+      -gpu_target->h/2.0f,
+       gpu_target->h/2.0f);
+
   createOcclusionMask(gpu_target, objects);
   createShadowMap(gpu_target);
   createShadowMask(gpu_target);
-  //occlusion_mask->draw(gpu_target, position.x, position.y);
 
   // Draws the texture with additive blending to mimic additive lighting
   glEnable(GL_BLEND);
@@ -81,28 +94,20 @@ void Light::createOcclusionMask(GPU_Target* gpu_target,
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
       occlusion_mask->getTexture(), 0);
 
-  float model[16];
-  float vp[16];
-  float mvp[16];
-  GPU_MatrixIdentity(vp);
-  GPU_MatrixOrtho(vp, 0, gpu_target->w, 0, gpu_target->h, 0, 1);
-  GPU_MatrixTranslate(vp, size/2, -size/2, 0.0f);
-  GPU_MatrixTranslate(vp, -position.x, position.y, 0.0);
+  // Centers the camera on the light
+  Vector camera_position = internal_camera->getPosition();
+  internal_camera->setPosition(camera_position + position);
 
   // Drawing occluders onto mask
-  GPU_ClearRGBA(gpu_target, 0, 0, 0, 0);
-  for (int i = 0; i < images.size(); i++) {
+  GPU_ClearRGBA(gpu_target, 1, 0, 1, 1);
+  for (unsigned int i = 0; i < images.size(); i++) {
     Image* image = objects.at(i);
-    float x = 320;
-    float y = 240;
-    GPU_MatrixIdentity(model);
-    GPU_MatrixTranslate(model, x, size-y, 0.0f);
-    GPU_MatrixScale(model, image->getWidth(), image->getHeight(), 1.0f);
-    GPU_Multiply4x4(mvp, vp, model);
+    float x = 0;
+    float y = 0;
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    objects.at(i)->draw(gpu_target, x, y, occlusion_mask_shader, mvp);
+    image->draw(gpu_target, x, y, occlusion_mask_shader, internal_camera);
     glDisable(GL_BLEND);
   }
 
@@ -114,15 +119,15 @@ void Light::createShadowMap(GPU_Target* gpu_target) {
   glFramebufferTexture1D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_1D,
       shadow_map->getTexture(), 0);
 
-  float matrix[16];
-  GPU_MatrixIdentity(matrix);
-  GPU_MatrixOrtho(matrix, 0, gpu_target->w, gpu_target->h, 0, 0, 1);
-  GPU_MatrixTranslate(matrix, 0, size, 0.0);
-  GPU_MatrixTranslate(matrix, quality * size / 2, size / 2, 0.0);
-  GPU_MatrixScale(matrix, quality * size, size, 0.0);
+  // Centers the camera on the origin
+  float width = (float) shadow_map->getWidth();
+  float height = (float) shadow_map->getHeight();
+  internal_camera->setPosition(Vector(
+        gpu_target->w/2.0 - width/2.0,
+      -(gpu_target->h/2.0 - height/2.0)));
 
   shadow_map_shader->setOcclusionMask(occlusion_mask->getTexture());
-  shadow_map->draw(gpu_target, 0, 0, shadow_map_shader, matrix);
+  shadow_map->draw(gpu_target, 0, 0, shadow_map_shader, internal_camera, false);
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -132,16 +137,12 @@ void Light::createShadowMask(GPU_Target* gpu_target) {
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
       shadow_mask->getTexture(), 0);
 
-  float matrix[16];
-  GPU_MatrixIdentity(matrix);
-  GPU_MatrixOrtho(matrix, 0, gpu_target->w, 0, gpu_target->h, 0, 1);
-  GPU_MatrixTranslate(matrix, 0, size, 0.0);
-  GPU_MatrixTranslate(matrix, size / 2, -size / 2, 0.0);
-  GPU_MatrixScale(matrix, size, size, 0.0);
+  // Centers the camera on the origin
+  internal_camera->setPosition(
+      Vector(gpu_target->w/2 - size/2, -(gpu_target->h/2 - size/2)));
 
-  GPU_ClearRGBA(gpu_target, 0, 0, 0, 0);
   shadow_mask_shader->setShadowMap(shadow_map->getTexture());
-  shadow_mask->draw(gpu_target, 0, 0, shadow_mask_shader, matrix);
+  shadow_mask->draw(gpu_target, 0, 0, shadow_mask_shader, internal_camera, false);
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

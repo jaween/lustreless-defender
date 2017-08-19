@@ -41,6 +41,4 @@ void main() {
   // Applies the blur to the alpha channel for soft shadows
   fragment_colour = colour;
   fragment_colour.a *= sum * smoothstep(1.0, 0.0, radius);
-  //fragment_colour.a = texture(shadow_map, shadow_map_coordinate).r;
-  //fragment_colour.a = texture(shadow_map, texture_coordinate.x).r;
 }

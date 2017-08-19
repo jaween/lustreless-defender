@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "camera.h"
 #include "entity.h"
 #include "image.h"
 #include "occlusion_mask_shader.h"
@@ -32,6 +33,7 @@ class Light : public Entity {
   Image* occlusion_mask;
   Image* shadow_map;
   Image* shadow_mask;
+  Camera* internal_camera;
   std::vector<Image*> objects;
   uint16_t size;
   SDL_Colour colour;

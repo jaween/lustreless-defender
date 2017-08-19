@@ -19,7 +19,7 @@ class Room {
  private:
   int angle;
   std::vector<Wave*> waves;
-  Image* background;
+  Image* image;
   int light_count;
   std::vector<Light*> lights;
   HighlightShader* highlight_shader;

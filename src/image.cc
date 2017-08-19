@@ -1,3 +1,5 @@
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 #include "stb_image.h"
 
 #include "image.h"
@@ -28,16 +30,18 @@ Image::~Image() {
   glDeleteBuffers(1, &index_buffer);
   glDeleteBuffers(1, &vertex_buffer);
   glDeleteVertexArrays(1, &vertex_array);
+  delete default_camera;
 }
 
 void Image::draw(GPU_Target* gpu_target, float x, float y, Shader* shader,
-    float* matrix) {
-  drawInternal(gpu_target, x, y, width, height, shader, matrix);
+    Camera* camera, bool bind_texture) {
+  drawInternal(gpu_target, x, y, width, height, shader, camera, bind_texture);
 }
 
 void Image::draw(GPU_Target* gpu_target, float x, float y, uint32_t width,
-    uint32_t height, Shader* shader, float* matrix) {
-  drawInternal(gpu_target, x, y, width, height, shader, matrix);
+    uint32_t height, Shader* shader, Camera* camera,
+    bool bind_texture) {
+  drawInternal(gpu_target, x, y, width, height, shader, camera, bind_texture);
 }
 
 GLuint Image::getTexture() {
@@ -88,6 +92,8 @@ void Image::init() {
   glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), uvs,
       GL_STATIC_DRAW);
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+  default_camera = new Camera(0, 0);
 }
 
 void Image::setTextureData(uint32_t width, uint32_t height, uint8_t* data) {
@@ -100,42 +106,41 @@ void Image::setTextureData(uint32_t width, uint32_t height, uint8_t* data) {
     glTexImage2D(texture_target, 0, GL_RGBA, width, height, 0, GL_RGBA,
         GL_UNSIGNED_BYTE, data);
   } else {
-      glTexImage1D(texture_target, 0, GL_RGBA, width, 0, GL_RGBA,
-          GL_UNSIGNED_BYTE, data);
+    glTexImage1D(texture_target, 0, GL_RGBA, width, 0, GL_RGBA,
+        GL_UNSIGNED_BYTE, data);
   }
 
-  glTexParameteri(texture_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(texture_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(texture_target, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(texture_target, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(texture_target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(texture_target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  float colour[] = { 1, 1, 0, 1 };
+  glTexParameterfv(texture_target, GL_TEXTURE_BORDER_COLOR, colour);
+  // TODO(jaween): Why do these properties mess up the shadows?
+  /*glTexParameteri(texture_target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+  glTexParameteri(texture_target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);*/
 }
 
 void Image::drawInternal(GPU_Target* gpu_target, float x, float y,
-    uint32_t width, uint32_t height, Shader* shader, float* matrix) {
-  const int index_count = 6;
+    uint32_t width, uint32_t height, Shader* shader, Camera* camera,
+    bool bind_texture) {
   Shader* image_shader = shader == NULL ? &texture_shader : shader;
-
-  // TODO(jaween): Pass in a camera to decide the matrix and inverse matrix
-  if (matrix != NULL) {
-    image_shader->setMvpMatrix(matrix);
-  } else {
-    float vp_matrix[16];
-    GPU_MatrixIdentity(vp_matrix);
-    GPU_MatrixOrtho(vp_matrix, 0, gpu_target->w, gpu_target->h, 0, 0, 1);
-
-    float model_matrix[16];
-    float mvp_matrix[16];
-    GPU_MatrixIdentity(model_matrix);
-    GPU_MatrixTranslate(model_matrix, x, gpu_target->h - y, 0.0);
-    GPU_MatrixScale(model_matrix, width, height, 0.0);
-    image_shader->setModelMatrix(model_matrix);
-
-    GPU_Multiply4x4(mvp_matrix, vp_matrix, model_matrix);
-    image_shader->setMvpMatrix(mvp_matrix);
+  Camera* image_camera = camera == NULL ? default_camera : camera;
+  if (camera == NULL) {
+    image_camera->setOrthographic(gpu_target->w, gpu_target->h);
   }
 
+  glm::mat4 view_projection_matrix = image_camera->getViewProjectionMatrix();
+  glm::mat4 model_matrix = glm::translate(glm::mat4(),
+      glm::vec3(x, -y, 0.0f));
+  model_matrix = glm::scale(model_matrix,
+      glm::vec3((float) width, (float) height, 1.0f));
+  image_shader->setModelMatrix(model_matrix);
+  image_shader->setMvpMatrix(view_projection_matrix * model_matrix);
+
+  const int index_count = 6;
   image_shader->activate();
-  glBindTexture(texture_target, texture);
+  if (bind_texture) {
+    glBindTexture(texture_target, texture);
+  }
   glBindVertexArray(vertex_array);
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);

@@ -14,12 +14,6 @@ ShadowMaskShader::ShadowMaskShader(SDL_Colour colour, uint16_t size)
   size_location =
       GPU_GetUniformLocation(program_id, kSizeName.c_str());
 
-  float matrix[16];
-  GPU_MatrixIdentity(matrix);
-  GPU_MatrixOrtho(matrix, 0, 640, 480, 0, 0, 1);
-  GPU_MatrixTranslate(matrix, 128, 480 - 128, 0.0);
-  GPU_MatrixScale(matrix, 256, 256, 0.0);
-
   setColour(colour);
   setSize(size);
 }

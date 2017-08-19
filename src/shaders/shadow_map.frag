@@ -17,15 +17,16 @@ void main() {
   // to the first occluder we encounter
   float occluder_distance = 1;
   for (int i = 0; i < size / 2; i++) {
-    // Radius is 0 to 0.5
+    // Radius here is 0 to 0.5 (to sample from the 1x1 texture)
     float radius = i / float(size);
 
     vec2 occlusion_mask_coord =
-        vec2(radius * cos(angle), radius * sin(angle)) + vec2(0.5f);
+        vec2(0.5f) + vec2(radius * cos(angle), radius * sin(angle));
     vec4 occlusion_mask_sample = texture(occlusion_mask, occlusion_mask_coord);
 
-    // Doubles radius to match unit circle diameter of 2
-    float value = occlusion_mask_sample.r > 0 ? 2 * radius : 1;
+    // Doubles radius to match unit circle radius of 1
+    // TODO(jaween): Why are all pixels marked as occluders when value is > 0?
+    float value = occlusion_mask_sample.r > 0.05 ? 2 * radius : 1;
     occluder_distance = min(occluder_distance, value);
   }
 
