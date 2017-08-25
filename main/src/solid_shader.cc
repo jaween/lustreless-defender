@@ -2,8 +2,8 @@
 
 #include "solid_shader.h"
 
-const std::string SolidShader::kVertexFile = "src/shaders/solid.vert";
-const std::string SolidShader::kFragmentFile = "src/shaders/solid.frag";
+const std::string SolidShader::kVertexFile = "main/src/shaders/solid.vert";
+const std::string SolidShader::kFragmentFile = "main/src/shaders/solid.frag";
 const std::string SolidShader::kColourName = "colour";
 
 SolidShader::SolidShader(SDL_Color colour)

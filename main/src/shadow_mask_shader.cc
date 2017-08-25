@@ -1,9 +1,9 @@
 #include "shadow_mask_shader.h"
 
 const std::string ShadowMaskShader::kVertexFile =
-    "src/shaders/transform.vert";
+    "main/src/shaders/transform.vert";
 const std::string ShadowMaskShader::kFragmentFile =
-    "src/shaders/shadow_mask.frag";
+    "main/src/shaders/shadow_mask.frag";
 const std::string ShadowMaskShader::kColourName = "colour";
 const std::string ShadowMaskShader::kSizeName = "size";
 

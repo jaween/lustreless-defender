@@ -2,9 +2,10 @@
 
 #include "shadow_map_shader.h"
 
-const std::string ShadowMapShader::kVertexFile = "src/shaders/transform.vert";
+const std::string ShadowMapShader::kVertexFile =
+    "main/src/shaders/transform.vert";
 const std::string ShadowMapShader::kFragmentFile =
-    "src/shaders/shadow_map.frag";
+    "main/src/shaders/shadow_map.frag";
 const std::string ShadowMapShader::kSizeName = "size";
 
 ShadowMapShader::ShadowMapShader(uint16_t size)

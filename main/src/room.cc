@@ -8,7 +8,7 @@
 void Room::init() {
   angle = 20;
 
-  image = new Image("assets/sprites/non_convex.png");
+  image = new Image("main/assets/sprites/non_convex.png");
   highlight_shader = new HighlightShader();
 
   unsigned int first = 0x3299CC;

@@ -1,7 +1,9 @@
 #include "highlight_shader.h"
 
-const std::string HighlightShader::kVertexFile = "src/shaders/highlight.vert";
-const std::string HighlightShader::kFragmentFile = "src/shaders/highlight.frag";
+const std::string HighlightShader::kVertexFile =
+    "main/src/shaders/highlight.vert";
+const std::string HighlightShader::kFragmentFile =
+    "main/src/shaders/highlight.frag";
 const std::string HighlightShader::kLightCountName = "lights.count";
 const std::string HighlightShader::kLightTypesName = "lights.type";
 const std::string HighlightShader::kLightPositionsName = "lights.position";
