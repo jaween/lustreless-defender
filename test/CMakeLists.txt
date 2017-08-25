@@ -1,5 +1,19 @@
+include(${PROJECT_SOURCE_DIR}/targets.cmake)
+
 set(TEST_SOURCE
   ${CMAKE_CURRENT_SOURCE_DIR}/main.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/example_test.cc
-  PARENT_SCOPE
 )
+
+# Test target
+set(TEST_EXECUTABLE diffraction_test)
+add_executable(${TEST_EXECUTABLE} "${TEST_SOURCE}")
+set_target_properties(${TEST_EXECUTABLE} PROPERTIES LINKER_LANGUAGE CXX)
+
+# Google Test
+find_package(GTest REQUIRED)
+find_package(Threads)
+include_directories(${GTEST_INCLUDE_DIR})
+target_link_libraries(${TEST_EXECUTABLE} ${GTEST_LIBRARIES})
+target_link_libraries(${TEST_EXECUTABLE} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(${TEST_EXECUTABLE} ${GAME_LIB})
