@@ -3,8 +3,8 @@ Dependencies
  * SDL 2.0
  * SDL_gpu
  * OpenGL 3.0 or greater
- * Make
- * CMake (to build SDL_gpu)
+ * Google Test
+ * CMake
 
 Usage
 -----
@@ -14,9 +14,15 @@ Usage
  `cmake -G "Unix Makefiles"
  make
  sudo make install`
- 3) Finally, build and play the game by running 
- `make
- ./diffraction`
+ 3) Move into a new build directory:
+ `mkdir build 
+ cd build`
+ 4) Build the game
+ `cmake ..
+  make diffraction`
+ 5) Run the game
+ `cd ..
+  ./bin/diffraction`
  
 Source Overview
 ---------------

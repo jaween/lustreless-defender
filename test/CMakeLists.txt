@@ -1,0 +1,5 @@
+set(TEST_SOURCE
+  ${CMAKE_CURRENT_SOURCE_DIR}/main.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/example_test.cc
+  PARENT_SCOPE
+)
