@@ -1,0 +1,21 @@
+set(SOURCE
+  ${SOURCE}
+  ${CMAKE_CURRENT_SOURCE_DIR}/camera.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/highlight_shader.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/image.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/shadow_map_shader.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/light.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/shadow_mask_shader.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/main.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/solid_shader.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/sprite.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/engine.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/occlusion_mask_shader.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/texture_shader.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/entity.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/room.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/vector.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/shader.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/wave.cc
+  PARENT_SCOPE
+)
