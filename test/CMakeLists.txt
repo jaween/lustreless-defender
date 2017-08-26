@@ -2,7 +2,8 @@ include(${PROJECT_SOURCE_DIR}/targets.cmake)
 
 set(TEST_SOURCE
   ${CMAKE_CURRENT_SOURCE_DIR}/main.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/example_test.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/component_test.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/entity_manager_test.cc
 )
 
 # Test target

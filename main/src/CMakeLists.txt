@@ -13,6 +13,9 @@ set(LIBRARY_SOURCE
   ${CMAKE_CURRENT_SOURCE_DIR}/occlusion_mask_shader.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/texture_shader.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/entity.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/entity_manager.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/component.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/transform_component.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/room.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/vector.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/shader.cc
