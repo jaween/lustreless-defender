@@ -37,3 +37,25 @@ TEST(EntityManagerTest, GetComponents) {
   auto components = entity_manager.getComponents<TransformComponent>(entity);
   ASSERT_EQ(1, components.size());
 }
+
+TEST(EntityManagerTest, RemoveComponents) {
+  EntityManager entity_manager;
+  Entity entity = entity_manager.createEntity();
+  entity_manager.addComponent<TransformComponent>(entity);
+  entity_manager.addComponent<TransformComponent>(entity);
+  entity_manager.addComponent<TransformComponent>(entity);
+  auto components = entity_manager.getComponents<TransformComponent>(entity);
+  ComponentPtr componentPtr = components.at(1);
+
+  entity_manager.removeComponent(entity, componentPtr);
+
+  components = entity_manager.getComponents<TransformComponent>(entity);
+  bool found = false;
+  for (const auto& component : components) {
+    if (component == componentPtr) {
+      found = true;
+      break;
+    }
+  }
+  ASSERT_EQ(found, false);
+}

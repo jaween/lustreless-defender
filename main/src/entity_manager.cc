@@ -18,3 +18,16 @@ std::vector<Entity> EntityManager::getEntities() {
   std::copy(entities.begin(), entities.end(), std::back_inserter(vector));
   return vector;
 }
+
+void EntityManager::removeComponent(Entity entity,
+    const ComponentPtr& component) {
+  ComponentsMap& map = entity_components_map[entity];
+  auto range = map.equal_range(component->getTypeId());
+
+  for (auto iter = range.first; iter != range.second; ++iter) {
+    if (iter->second == component) {
+      map.erase(iter);
+      break;
+    }
+  }
+}

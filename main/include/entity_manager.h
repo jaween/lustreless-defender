@@ -1,6 +1,7 @@
 #ifndef ENTITY_MANAGER_H_
 #define ENTITY_MANAGER_H_
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <set>
@@ -25,22 +26,24 @@ class EntityManager {
   // TODO(jaween): Separate the implementation into a separate file!
   template<class T>
   void addComponent(Entity entity) {
-    ComponentId id = Component::getTypeId<T>();
-    ComponentPtr ptr = std::shared_ptr<T>(new T);
+    ComponentPtr component = std::shared_ptr<T>(new T);
+    ComponentId id = component->getTypeId();
     ComponentsMap& map = entity_components_map[entity];
-    map.insert(std::pair<ComponentId, ComponentPtr>(id, ptr));
+    map.insert(std::pair<ComponentId, ComponentPtr>(id, component));
   }
+
+  void removeComponent(Entity entity, const ComponentPtr& component);
 
   // TODO(jaween): Separate the implementation into a separate file!
   template<class T>
   std::vector<ComponentPtr> getComponents(Entity entity) {
     ComponentsMap map = entity_components_map[entity];
-    std::vector<ComponentPtr> output;
 
-    // TODO(jaween): Is there a better wap to do this?
-    for (const auto& pair : map) {
-      output.push_back(pair.second);
-    }
+    std::vector<ComponentPtr> output;
+    std::transform(map.begin(), map.end(), std::back_inserter(output),
+        [](std::pair<ComponentId, ComponentPtr> pair) {
+          return pair.second;
+        });
     return output;
   }
 

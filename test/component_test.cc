@@ -1,8 +1,10 @@
 #include "gtest/gtest.h"
+#include <memory>
 
 #include "transform_component.h"
 
 TEST(ComponentTest, PersistentId) {
-  ComponentId id = Component::getTypeId<TransformComponent>();
-  ASSERT_EQ(id, Component::getTypeId<TransformComponent>());
+  auto p1 = std::shared_ptr<TransformComponent>(new TransformComponent());
+  auto p2 = std::shared_ptr<TransformComponent>(new TransformComponent());
+  ASSERT_EQ(p1->getTypeId(), p2->getTypeId());
 }

@@ -1,7 +1,4 @@
 #include "component.h"
 
-std::atomic<uint32_t> Component::next_id(0);
-
-Component::~Component() {
-  // Abstract class
-}
+// Starts per-type unique IDs from 0
+std::atomic<ComponentId> Component::next_id(0);
