@@ -9,12 +9,12 @@
 #include <utility>
 #include <vector>
 
-#include "component.h"
+#include "base_component.h"
 
 typedef uint64_t Entity;
-typedef std::shared_ptr<Component> ComponentPtr;
-typedef std::unordered_multimap<ComponentId, ComponentPtr> ComponentsMap;
-typedef std::unordered_map<Entity, ComponentsMap> EntityComponentsMap;
+using ComponentPtr = std::shared_ptr<BaseComponent>;
+using ComponentsMap = std::unordered_multimap<ComponentId, ComponentPtr>;
+using EntityComponentsMap = std::unordered_map<Entity, ComponentsMap>;
 
 class EntityManager {
  public:
@@ -27,7 +27,7 @@ class EntityManager {
   template<class T>
   void addComponent(Entity entity) {
     ComponentPtr component = std::shared_ptr<T>(new T);
-    ComponentId id = component->getTypeId();
+    ComponentId id = T::getTypeId();
     ComponentsMap& map = entity_components_map[entity];
     map.insert(std::pair<ComponentId, ComponentPtr>(id, component));
   }

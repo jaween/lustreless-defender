@@ -1,5 +1,7 @@
 #include "entity_manager.h"
 
+#include "component.h"
+
 EntityManager::EntityManager()
  : next_id(0) { }
 
@@ -22,7 +24,8 @@ std::vector<Entity> EntityManager::getEntities() {
 void EntityManager::removeComponent(Entity entity,
     const ComponentPtr& component) {
   ComponentsMap& map = entity_components_map[entity];
-  auto range = map.equal_range(component->getTypeId());
+
+  auto range = map.equal_range(component->typeId());
 
   for (auto iter = range.first; iter != range.second; ++iter) {
     if (iter->second == component) {
