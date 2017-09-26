@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 
 #include "entity_manager.h"
+#include "kinetic_component.h"
 #include "transform_component.h"
 
 TEST(EntityManagerTest, CreateEntity) {
@@ -43,19 +44,21 @@ TEST(EntityManagerTest, RemoveComponents) {
   Entity entity = entity_manager.createEntity();
   entity_manager.addComponent<TransformComponent>(entity);
   entity_manager.addComponent<TransformComponent>(entity);
-  entity_manager.addComponent<TransformComponent>(entity);
+  entity_manager.addComponent<KineticComponent>(entity);
+
+  entity_manager.removeComponent<TransformComponent>(entity);
+
   auto components = entity_manager.getComponents<TransformComponent>(entity);
-  ComponentPtr componentPtr = components.at(1);
-
-  entity_manager.removeComponent(entity, componentPtr);
-
-  components = entity_manager.getComponents<TransformComponent>(entity);
-  bool found = false;
+  bool found_transform = false;
+  bool found_kinetic = false;
   for (const auto& component : components) {
-    if (component == componentPtr) {
-      found = true;
-      break;
+    if (component->typeId() == TransformComponent::getTypeId()) {
+      found_transform = true;
+    }
+    if (component->typeId() == KineticComponent::getTypeId()) {
+      found_kinetic = true;
     }
   }
-  ASSERT_EQ(found, false);
+  ASSERT_EQ(found_transform, false);
+  ASSERT_EQ(found_kinetic, true);
 }
