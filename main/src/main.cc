@@ -2,7 +2,7 @@
 #include "engine.h"
 
 int main() {
-  Room room;
-  Engine engine(room);
-  engine.run();
+  Engine engine;
+  Room room(engine);
+  engine.run(room);
 }

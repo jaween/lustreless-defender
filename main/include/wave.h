@@ -3,10 +3,10 @@
 
 #include <vector>
 
-#include "entity.h"
+#include "entity_old.h"
 #include "vector.h"
 
-class Wave : public Entity {
+class Wave : public EntityOld {
  public:
   Wave(Vector& origin,
       const Vector& start_vector,

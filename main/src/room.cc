@@ -3,7 +3,14 @@
 #include <iostream>
 
 #include "room.h"
+#include "controlled_movement.h"
+#include "transform_component.h"
 #include "vector.h"
+
+Room::Room(Engine& engine)
+ : engine(engine) {
+  // No implementation
+}
 
 void Room::init() {
   angle = 20;
@@ -34,6 +41,15 @@ void Room::init() {
   }
   lights.at(0)->setColour(first_colour);
   lights.at(1)->setColour(second_colour);
+
+  engine.addProcessor<ControlledMovement>();
+  EntityManager& entity_manager = engine.getEntityManager();
+
+  Entity entity1 = entity_manager.createEntity();
+  entity_manager.addComponent<TransformComponent>(entity1);
+
+  Entity entity2 = entity_manager.createEntity();
+  entity_manager.addComponent<TransformComponent>(entity2);
 }
 
 void Room::update() {

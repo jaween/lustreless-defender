@@ -88,6 +88,15 @@ class EntityManager {
     return output;
   }
 
+  template<class T>
+  ComponentPtr getComponent(Entity entity) {
+    return entity_components_map[T::getTypeId()];
+  }
+
+  std::set<Entity> getEntities(Requirements requirements);
+
+  void addRequirements(Requirements requirements);
+
  private:
   uint64_t next_entity_id;
   std::set<Entity> entities;

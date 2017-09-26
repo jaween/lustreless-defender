@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "camera.h"
-#include "entity.h"
+#include "entity_old.h"
 #include "image.h"
 #include "occlusion_mask_shader.h"
 #include "shadow_map_shader.h"
@@ -14,7 +14,7 @@
  * A coloured 2D light source that can cast shadows off a given set of objects.
  * The source can have different shapes.
  */
-class Light : public Entity {
+class Light : public EntityOld {
  public:
   Light(SDL_Colour colour);
   ~Light();

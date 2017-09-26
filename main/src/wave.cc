@@ -13,7 +13,7 @@ Wave::Wave(Vector& origin,
     float initial_radius,
     std::vector<Wave*>& waves,
     int age)
-    : Entity(origin),
+    : EntityOld(origin),
       origin(origin),
       start_vector(start_vector),
       end_vector(end_vector),

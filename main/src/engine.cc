@@ -2,16 +2,16 @@
 #include <iostream>
 
 #include "engine.h"
+#include "room.h"
 
 const int Engine::kScreenWidth = 640;
 const int Engine::kScreenHeight = 480;
 
-Engine::Engine(const Room& room)
-    : room(room) {
+Engine::Engine() {
   std::clog << "Engine started" << std::endl;
 }
 
-void Engine::run() {
+void Engine::run(Room& room) {
   if (!init()) {
     return;
   }
@@ -31,14 +31,23 @@ void Engine::run() {
     }
 
     room.update();
+    for (auto& pair : processors) {
+      const long temp_update_ms = 16;
+      pair.first->update(
+          temp_update_ms,
+          entity_manager.getEntities(pair.second));
+    }
+
     room.draw(window);
-
     GPU_Flip(window);
-
     SDL_Delay(10);
   }
 
   finish();
+}
+
+EntityManager& Engine::getEntityManager() {
+  return entity_manager;
 }
 
 bool Engine::init() {

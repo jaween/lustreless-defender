@@ -12,7 +12,7 @@ set(LIBRARY_SOURCE
   ${CMAKE_CURRENT_SOURCE_DIR}/engine.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/occlusion_mask_shader.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/texture_shader.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/entity.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/entity_old.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/entity_manager.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/base_component.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/kinetic_component.cc
