@@ -1,5 +1,6 @@
 #ifndef ENTITY_MANAGER_H_
 #define ENTITY_MANAGER_H_
+
 #include <algorithm>
 #include <cstdint>
 #include <memory>
@@ -9,16 +10,12 @@
 #include <vector>
 
 #include "base_component.h"
-#include "entity_manager_util.h"
+#include "type_utils.h"
 
-
-typedef uint64_t Entity;
 using ComponentPtr = std::shared_ptr<BaseComponent>;
 using ComponentsMap = std::unordered_map<ComponentId, ComponentPtr>;
 using EntityComponentsMap = std::unordered_map<Entity, ComponentsMap>;
-
 using Capabilities = std::set<ComponentId>;
-using Requirements = std::set<ComponentId>;
 
 class EntityManager {
  public:
@@ -96,7 +93,7 @@ class EntityManager {
   std::set<Entity> entities;
   EntityComponentsMap entity_components_map;
 
-  std::unordered_map<Requirements, std::multiset<Entity>, SetHasher>
+  std::unordered_map<Requirements, std::set<Entity>, SetHasher>
       entities_which_match_requirements;
   std::unordered_map<Entity, Capabilities> entity_capabilities;
   std::unordered_map<Entity, std::multiset<Requirements>>

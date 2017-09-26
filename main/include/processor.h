@@ -4,11 +4,12 @@
 #include <set>
 
 #include "component.h"
+#include "type_utils.h"
 
 class Processor {
  public:
-  virtual std::set<ComponentId> registerInterest() const = 0;
-  virtual void update(long ms) = 0;
+  virtual Requirements chooseRequirements() const = 0;
+  virtual void update(long ms, const std::set<Entity>& entities) = 0;
 };
 
 #endif // PROCESSOR_H_

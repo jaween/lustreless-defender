@@ -1,11 +1,14 @@
-#ifndef ENTITY_MANAGER_UTIL_H_
-#define ENTITY_MANAGER_UTIL_H_
+#ifndef TYPE_UTILS_H_
+#define TYPE_UTILS_H_
 
 #include <boost/functional/hash.hpp>
 #include <set>
 #include <utility>
 
 #include "component.h"
+
+typedef uint64_t Entity;
+using Requirements = std::set<ComponentId>;
 
 struct SetHasher {
   template<class T>
@@ -19,4 +22,4 @@ struct SetHasher {
   }
 };
 
-#endif // ENTITY_MANAGER_UTIL_H_
+#endif // TYPE_UTILS_H_
