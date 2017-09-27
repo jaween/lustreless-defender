@@ -1,3 +1,5 @@
+#include <SDL2/SDL.h>
+
 #include "controlled_movement.h"
 #include "transform_component.h"
 
@@ -14,9 +16,24 @@ Requirements ControlledMovement::chooseRequirements() const {
 }
 
 void ControlledMovement::update(long ms, const std::set<Entity>& entities) {
+  const Uint8* key_states = SDL_GetKeyboardState(NULL);
+
+  // Moves the entity using the arrow keys
   for (const auto& entity : entities) {
     std::vector<ComponentPtr> components = entity_manager.getComponents(entity);
     auto component = entity_manager.getComponent<TransformComponent>(entity);
-    component->x++;
+
+    if (key_states[SDL_SCANCODE_LEFT]) {
+      component->x--;
+    }
+    if (key_states[SDL_SCANCODE_UP]) {
+      component->y++;
+    }
+    if (key_states[SDL_SCANCODE_RIGHT]) {
+      component->x++;
+    }
+    if (key_states[SDL_SCANCODE_DOWN]) {
+      component->y--;
+    }
   }
 }

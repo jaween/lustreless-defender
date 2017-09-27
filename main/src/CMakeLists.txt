@@ -15,7 +15,7 @@ set(LIBRARY_SOURCE
   ${CMAKE_CURRENT_SOURCE_DIR}/entity_old.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/entity_manager.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/base_component.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/kinetic_component.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/input_component.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/transform_component.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/render_component.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/processor.cc
