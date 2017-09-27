@@ -17,7 +17,11 @@ set(LIBRARY_SOURCE
   ${CMAKE_CURRENT_SOURCE_DIR}/base_component.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/kinetic_component.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/transform_component.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/render_component.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/processor.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/renderer.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/controlled_movement.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/simple_renderer.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/room.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/vector.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/shader.cc

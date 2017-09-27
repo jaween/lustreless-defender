@@ -35,7 +35,7 @@ TEST(EntityManagerTest, GetComponents) {
   EntityManager entity_manager;
   Entity entity = entity_manager.createEntity();
   entity_manager.addComponent<TransformComponent>(entity);
-  auto components = entity_manager.getComponents<TransformComponent>(entity);
+  auto components = entity_manager.getComponents(entity);
   ASSERT_EQ(1, components.size());
 }
 
@@ -48,7 +48,7 @@ TEST(EntityManagerTest, RemoveComponents) {
 
   entity_manager.removeComponent<TransformComponent>(entity);
 
-  auto components = entity_manager.getComponents<TransformComponent>(entity);
+  auto components = entity_manager.getComponents(entity);
   bool found_transform = false;
   bool found_kinetic = false;
   for (const auto& component : components) {

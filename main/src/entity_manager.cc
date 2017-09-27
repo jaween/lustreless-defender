@@ -14,6 +14,13 @@ Entity EntityManager::createEntity() {
 
 void EntityManager::deleteEntity(Entity entity) {
   entities.erase(entity);
+  entity_components_map.erase(entity);
+  entity_capabilities.erase(entity);
+
+  for (auto requirement : requirements_matched_by_entities[entity]) {
+    entities_which_match_requirements[requirement].erase(entity);
+  }
+  requirements_matched_by_entities.erase(entity);
 }
 
 std::vector<Entity> EntityManager::getEntities() {
@@ -22,11 +29,26 @@ std::vector<Entity> EntityManager::getEntities() {
   return vector;
 }
 
-std::set<Entity> EntityManager::getEntities(Requirements requirements) {
+std::vector<ComponentPtr> EntityManager::getComponents(Entity entity) {
+  std::vector<ComponentPtr> output;
+  auto iter = entity_components_map.find(entity);
+  if (iter == entity_components_map.end()) {
+    return output;
+  }
+  ComponentsMap map = iter->second;
+
+  std::transform(map.begin(), map.end(), std::back_inserter(output),
+      [](std::pair<ComponentId, ComponentPtr> pair) {
+        return pair.second;
+      });
+  return output;
+}
+
+std::set<Entity> EntityManager::getEntities(const Requirements& requirements) {
   return entities_which_match_requirements[requirements];
 }
 
-void EntityManager::addRequirements(Requirements requirements) {
+void EntityManager::addRequirements(const Requirements& requirements) {
   // TODO(jaween): How about processors already using this set of requirements?
   if (entities_which_match_requirements.count(requirements) > 0) {
     std::cerr << "PROCESSOR EXISTS" << std::endl;

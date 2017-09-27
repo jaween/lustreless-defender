@@ -7,7 +7,8 @@
 
 #include "component.h"
 
-typedef uint64_t Entity;
+using Entity = uint64_t;
+using ComponentPtr = std::shared_ptr<BaseComponent>;
 using Requirements = std::set<ComponentId>;
 
 struct SetHasher {

@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "engine.h"
+#include "entity_manager.h"
 #include "highlight_shader.h"
 #include "image.h"
 #include "light.h"
@@ -12,11 +13,11 @@
 
 class Room {
  public:
-  Room(Engine& engine);
+  Room(Engine& engine, EntityManager& entity_manager);
+  ~Room();
   void init();
   void update();
   void draw(GPU_Target* gpu_target);
-  void finish();
 
   template<class T>
   void addProcessor() {
@@ -25,6 +26,7 @@ class Room {
 
  private:
   Engine& engine;
+  EntityManager& entity_manager;
   int angle;
   std::vector<Wave*> waves;
   Image* image;

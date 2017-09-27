@@ -12,7 +12,6 @@
 #include "base_component.h"
 #include "type_utils.h"
 
-using ComponentPtr = std::shared_ptr<BaseComponent>;
 using ComponentsMap = std::unordered_map<ComponentId, ComponentPtr>;
 using EntityComponentsMap = std::unordered_map<Entity, ComponentsMap>;
 using Capabilities = std::set<ComponentId>;
@@ -26,15 +25,14 @@ class EntityManager {
 
   // TODO(jaween): Separate the implementation into a separate file!
   template<class T>
-  void addComponent(Entity entity) {
+  std::shared_ptr<T> addComponent(Entity entity) {
     // Adds component to collection
-    ComponentPtr component = std::shared_ptr<T>(new T);
+    ComponentPtr component = std::make_shared<T>();
     ComponentId id = T::getTypeId();
-    ComponentsMap& map = entity_components_map[entity];
-    map.insert(std::pair<ComponentId, ComponentPtr>(id, component));
+    entity_components_map[entity][id] = component;
 
     // Adds to this entity's capability collection
-    Capabilities capabilities = entity_capabilities[entity];
+    Capabilities& capabilities = entity_capabilities[entity];
     capabilities.insert(T::getTypeId());
 
     // Tracks requirements met by an entity and enities which meet requirements
@@ -51,13 +49,14 @@ class EntityManager {
         requirements_matched_by_entities[entity].insert(requirements);
       }
     }
+
+    return std::static_pointer_cast<T>(component);
   }
 
   template<class T>
   void removeComponent(Entity entity) {
     // Removes the component from this entity
-    ComponentsMap& map = entity_components_map[entity];
-    map.erase(T::getTypeId());
+    entity_components_map[entity].erase(T::getTypeId());
 
     // The entity now has fewer capabilities
     entity_capabilities[entity].erase(T::getTypeId());
@@ -75,33 +74,32 @@ class EntityManager {
     }
   }
 
-  // TODO(jaween): Separate the implementation into a separate file!
   template<class T>
-  std::vector<ComponentPtr> getComponents(Entity entity) {
+  std::shared_ptr<T> getComponent(Entity entity) {
+    // Casts a BaseComponent into a derived template Component
+    auto iter = entity_components_map.find(entity);
+    if (iter == entity_components_map.end()) {
+      return nullptr;
+    }
+
     ComponentsMap map = entity_components_map[entity];
+    std::shared_ptr<BaseComponent> component_ptr;
+    if (map.find(T::getTypeId()) == map.end()) {
+      return nullptr;
+    }
 
-    std::vector<ComponentPtr> output;
-    std::transform(map.begin(), map.end(), std::back_inserter(output),
-        [](std::pair<ComponentId, ComponentPtr> pair) {
-          return pair.second;
-        });
-    return output;
+    component_ptr = map[T::getTypeId()];
+    return std::static_pointer_cast<T>(component_ptr);
   }
 
-  template<class T>
-  ComponentPtr getComponent(Entity entity) {
-    return entity_components_map[T::getTypeId()];
-  }
-
-  std::set<Entity> getEntities(Requirements requirements);
-
-  void addRequirements(Requirements requirements);
+  std::vector<ComponentPtr> getComponents(Entity entity);
+  std::set<Entity> getEntities(const Requirements& requirements);
+  void addRequirements(const Requirements& requirements);
 
  private:
   uint64_t next_entity_id;
   std::set<Entity> entities;
   EntityComponentsMap entity_components_map;
-
   std::unordered_map<Requirements, std::set<Entity>, SetHasher>
       entities_which_match_requirements;
   std::unordered_map<Entity, Capabilities> entity_capabilities;

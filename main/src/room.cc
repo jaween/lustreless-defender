@@ -2,13 +2,16 @@
 #include <cmath>
 #include <iostream>
 
-#include "room.h"
 #include "controlled_movement.h"
+#include "render_component.h"
+#include "room.h"
+#include "simple_renderer.h"
 #include "transform_component.h"
 #include "vector.h"
 
-Room::Room(Engine& engine)
- : engine(engine) {
+Room::Room(Engine& engine, EntityManager& entity_manager)
+ : engine(engine),
+   entity_manager(entity_manager) {
   // No implementation
 }
 
@@ -43,13 +46,11 @@ void Room::init() {
   lights.at(1)->setColour(second_colour);
 
   engine.addProcessor<ControlledMovement>();
-  EntityManager& entity_manager = engine.getEntityManager();
-
+  engine.addRenderer<SimpleRenderer>();
   Entity entity1 = entity_manager.createEntity();
   entity_manager.addComponent<TransformComponent>(entity1);
-
-  Entity entity2 = entity_manager.createEntity();
-  entity_manager.addComponent<TransformComponent>(entity2);
+  std::shared_ptr<RenderComponent> renderComponent = entity_manager.addComponent<RenderComponent>(entity1);
+  renderComponent->setImage("main/assets/sprites/non_convex.png");
 }
 
 void Room::update() {
@@ -94,9 +95,6 @@ void Room::update() {
 }
 
 void Room::draw(GPU_Target* gpu_target) {
-  SDL_Color color = { 0x00, 0x00, 0x00, 0xFF };
-  GPU_ClearColor(gpu_target, color);
-
   for (int i = 0; i < lights.size(); i++) {
     lights.at(i)->draw(gpu_target);
   }
@@ -113,8 +111,8 @@ void Room::draw(GPU_Target* gpu_target) {
   }
 }
 
-void Room::finish() {
-  while (waves.size() > 0) {
+Room::~Room() {
+  /*while (waves.size() > 0) {
     Wave* wave = waves.at(waves.size() - 1);
     delete wave;
   }
@@ -128,7 +126,7 @@ void Room::finish() {
   lights.clear();
 
   delete image;
-  delete highlight_shader;
+  delete highlight_shader;*/
 }
 
 void Room::mergeWaves() {
