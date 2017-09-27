@@ -24,16 +24,16 @@ void ControlledMovement::update(long ms, const std::set<Entity>& entities) {
     auto component = entity_manager.getComponent<TransformComponent>(entity);
 
     if (key_states[SDL_SCANCODE_LEFT]) {
-      component->x--;
+      component->position.x--;
     }
     if (key_states[SDL_SCANCODE_UP]) {
-      component->y++;
+      component->position.y++;
     }
     if (key_states[SDL_SCANCODE_RIGHT]) {
-      component->x++;
+      component->position.x++;
     }
     if (key_states[SDL_SCANCODE_DOWN]) {
-      component->y--;
+      component->position.y--;
     }
   }
 }

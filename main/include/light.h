@@ -19,6 +19,7 @@ class Light : public EntityOld {
   Light(SDL_Colour colour);
   ~Light();
   void draw(GPU_Target* gpu_target) override;
+  void draw(GPU_Target* gpu_target, const Vector& position);
   void setObjects(std::vector<Image*> objects);
   void setColour(SDL_Colour colour);
   SDL_Color getColour() const;

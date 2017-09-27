@@ -24,7 +24,7 @@ Vector::Vector(const Vector& other) {
 }
 
 Vector& Vector::operator=(Vector&& other) {
- move(std::move(other));
+  move(std::move(other));
   return *this;
 }
 

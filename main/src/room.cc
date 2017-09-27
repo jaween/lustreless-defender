@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "controlled_movement.h"
+#include "light_component.h"
 #include "render_component.h"
 #include "room.h"
 #include "simple_renderer.h"
@@ -49,8 +50,11 @@ void Room::init() {
   engine.addRenderer<SimpleRenderer>();
   Entity entity1 = entity_manager.createEntity();
   entity_manager.addComponent<TransformComponent>(entity1);
-  std::shared_ptr<RenderComponent> renderComponent = entity_manager.addComponent<RenderComponent>(entity1);
-  renderComponent->setImage("main/assets/sprites/non_convex.png");
+  std::shared_ptr<LightComponent> light_component = entity_manager.addComponent<LightComponent>(entity1);
+  SDL_Color colour = { 0xFF, 0x00, 0xFF, 0xFF };
+  light_component->setColour(colour);
+  std::shared_ptr<RenderComponent> render_component = entity_manager.addComponent<RenderComponent>(entity1);
+  render_component->setImage("main/assets/sprites/non_convex.png");
 }
 
 void Room::update() {

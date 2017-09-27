@@ -27,6 +27,7 @@ class EntityManager {
   template<class T>
   std::shared_ptr<T> addComponent(Entity entity) {
     // Adds component to collection
+    // TODO(jaween): Use (variadic?) arguments to construct Component
     ComponentPtr component = std::make_shared<T>();
     ComponentId id = T::getTypeId();
     entity_components_map[entity][id] = component;

@@ -67,6 +67,11 @@ void Light::draw(GPU_Target* gpu_target) {
   glDisable(GL_BLEND);
 }
 
+void Light::draw(GPU_Target* gpu_target, const Vector& position) {
+  this->position = position;
+  draw(gpu_target);
+}
+
 void Light::setObjects(std::vector<Image*> objects) {
   this->objects = objects;
 }
