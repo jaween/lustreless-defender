@@ -58,6 +58,15 @@ uint32_t Image::getHeight() const {
   return height;
 }
 
+void Image::setBlendingEnabled(bool enabled) {
+  this->blending_enabled = enabled;
+}
+
+void Image::setBlendMode(GLenum sfactor, GLenum dfactor) {
+  this->blend_sfactor = sfactor;
+  this->blend_dfactor = dfactor;
+}
+
 void Image::init() {
   glGenVertexArrays(1, &vertex_array);
   glBindVertexArray(vertex_array);
@@ -96,6 +105,11 @@ void Image::init() {
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
   default_camera = new Camera(0, 0);
+
+  // TODO(jaween): What is a sane default? We want 2D transparency by default
+  blending_enabled = true;
+  blend_sfactor = GL_ONE;
+  blend_dfactor = GL_ONE_MINUS_SRC_ALPHA;
 }
 
 void Image::setTextureData(uint32_t width, uint32_t height, uint8_t* data) {
@@ -112,11 +126,13 @@ void Image::setTextureData(uint32_t width, uint32_t height, uint8_t* data) {
         GL_UNSIGNED_BYTE, data);
   }
 
-  glTexParameteri(texture_target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(texture_target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(texture_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(texture_target, GL_TEXTURE_MAG_FILTER,
+      GL_LINEAR_MIPMAP_LINEAR);
+  glGenerateMipmap(GL_TEXTURE_2D);
   float colour[] = { 1, 1, 0, 1 };
   glTexParameterfv(texture_target, GL_TEXTURE_BORDER_COLOR, colour);
-  // TODO(jaween): Why do these properties mess up the shadows?
+  // TODO(jaween): Why do these properties mess up the light/shadows?
   /*glTexParameteri(texture_target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
   glTexParameteri(texture_target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);*/
 }
@@ -139,11 +155,17 @@ void Image::drawInternal(GPU_Target* gpu_target, float x, float y,
   image_shader->setModelMatrix(model_matrix);
   image_shader->setMvpMatrix(view_projection_matrix * model_matrix);
 
+  if (blending_enabled) {
+    glEnable(GL_BLEND);
+    glBlendFunc(blend_sfactor, blend_dfactor);
+  }
+
   const int index_count = 6;
   image_shader->activate();
   if (bind_texture) {
     glBindTexture(texture_target, texture);
   }
+
   glBindVertexArray(vertex_array);
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
@@ -152,4 +174,8 @@ void Image::drawInternal(GPU_Target* gpu_target, float x, float y,
   glDisableVertexAttribArray(1);
   glBindVertexArray(0);
   image_shader->deactivate();
+
+  if (blending_enabled) {
+    glDisable(GL_BLEND);
+  }
 }

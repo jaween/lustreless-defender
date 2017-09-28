@@ -45,7 +45,7 @@ void Engine::run(Room& room) {
           entity_manager.getEntities(pair.second));
     }
 
-    SDL_Color color = { 0x00, 0x00, 0x00, 0x00 };
+    SDL_Color color = { 0x00, 0x00, 0x00, 0xFF };
     GPU_ClearColor(window, color);
     room.draw(window);
     for (auto& pair : renderers) {

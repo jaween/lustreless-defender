@@ -26,6 +26,8 @@ class Image
   GLuint getTexture();
   uint32_t getWidth() const;
   uint32_t getHeight() const;
+  void setBlendingEnabled(bool enabled);
+  void setBlendMode(GLenum sfactor, GLenum dfactor);
 
  private:
   uint32_t width;
@@ -38,6 +40,9 @@ class Image
   GLenum texture_target;
   TextureShader texture_shader;
   Camera* default_camera;
+  bool blending_enabled;
+  GLenum blend_sfactor;
+  GLenum blend_dfactor;
 
   void init();
   void setTextureData(uint32_t width, uint32_t height, uint8_t* data);

@@ -15,6 +15,7 @@ Light::Light(SDL_Color colour, uint16_t size) {
   occlusion_mask = new Image(size, size);
   shadow_map = new Image(size * quality, 1);
   shadow_mask = new Image(size, size);
+  shadow_mask->setBlendMode(GL_SRC_ALPHA, GL_ONE);
 
   occlusion_mask_shader = new OcclusionMaskShader();
   shadow_map_shader = new ShadowMapShader(size);
@@ -36,6 +37,7 @@ Light::Light(SDL_Color colour, uint16_t size) {
     std::cerr << "Framebuffer is not OK, status is " << status << std::endl;
   }
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  debug_angle = 0;
 }
 
 Light::~Light() {
@@ -62,10 +64,9 @@ void Light::draw(GPU_Target* gpu_target) {
   createShadowMask(gpu_target);
 
   // Draws the texture with additive blending to mimic additive lighting
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+  shadow_mask->setBlendingEnabled(true);
   shadow_mask->draw(gpu_target, position.x, position.y);
-  glDisable(GL_BLEND);
+  debug_angle += 0.01f;
 }
 
 void Light::draw(GPU_Target* gpu_target, const Vector& position) {
@@ -111,10 +112,10 @@ void Light::createOcclusionMask(GPU_Target* gpu_target,
     float x = 0;
     float y = 0;
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    image->draw(gpu_target, x, y, 0, occlusion_mask_shader, internal_camera);
-    glDisable(GL_BLEND);
+    image->setBlendingEnabled(true);
+    image->setBlendMode(GL_SRC_ALPHA, GL_ONE);
+    image->draw(gpu_target, x, y, debug_angle, occlusion_mask_shader, internal_camera);
+    image->setBlendingEnabled(false);
   }
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -148,6 +149,7 @@ void Light::createShadowMask(GPU_Target* gpu_target) {
   internal_camera->setPosition(
       Vector(gpu_target->w/2 - size/2, -(gpu_target->h/2 - size/2)));
 
+  shadow_mask->setBlendingEnabled(false);
   shadow_mask_shader->setShadowMap(shadow_map->getTexture());
   shadow_mask->draw(gpu_target, 0, 0, 0, shadow_mask_shader, internal_camera,
       false);

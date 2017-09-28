@@ -39,6 +39,7 @@ class Light : public EntityOld {
   uint16_t size;
   SDL_Colour colour;
   float quality;
+  float debug_angle;
 
   void createOcclusionMask(GPU_Target* gpu_target, std::vector<Image*> images);
   void createShadowMap(GPU_Target* gpu_target);

@@ -20,7 +20,7 @@ Room::Room(Engine& engine, EntityManager& entity_manager)
 }
 
 void Room::init() {
-  angle = 20;
+  angle = 0;
 
   image = new Image("main/assets/sprites/non_convex.png");
   highlight_shader = new HighlightShader();
@@ -120,7 +120,7 @@ void Room::draw(GPU_Target* gpu_target) {
 
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-  image->draw(gpu_target, 0, 0);
+  image->draw(gpu_target, 0, 0, angle * 0.01f);
   glDisable(GL_BLEND);
 
   for (int i = 0; i < waves.size(); i++) {
