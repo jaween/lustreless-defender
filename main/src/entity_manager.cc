@@ -51,7 +51,7 @@ std::set<Entity> EntityManager::getEntities(const Requirements& requirements) {
 void EntityManager::addRequirements(const Requirements& requirements) {
   // TODO(jaween): How about processors already using this set of requirements?
   if (entities_which_match_requirements.count(requirements) > 0) {
-    std::cerr << "PROCESSOR EXISTS" << std::endl;
+    std::cerr << "PROCESSOR WITH REQUIREMENTS EXISTS" << std::endl;
   }
 
   // TODO(jaween): There already may be matching entities, add those!

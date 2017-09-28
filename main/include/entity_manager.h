@@ -40,11 +40,21 @@ class EntityManager {
     Capabilities intersection;
     for (const auto& pair : entities_which_match_requirements) {
       Requirements requirements = pair.first;
+
+      // Skips processors that already know that this entity matches it
+      if (entities_which_match_requirements[requirements].find(entity) !=
+          entities_which_match_requirements[requirements].end()) {
+        continue;
+      }
+
+      // Checks if this entity's capability set matches the requirements
+      intersection.clear();
       std::set_intersection(capabilities.begin(),
                             capabilities.end(),
                             requirements.begin(),
                             requirements.end(),
                             std::inserter(intersection, intersection.begin()));
+
       if (intersection == requirements) {
         entities_which_match_requirements[requirements].insert(entity);
         requirements_matched_by_entities[entity].insert(requirements);

@@ -19,22 +19,16 @@ class Engine {
 
   template<class T>
   void addProcessor() {
-    auto processor = std::shared_ptr<T>(new T(entity_manager));
-    auto requirements = processor->chooseRequirements();
-    auto pair = std::pair<std::shared_ptr<Processor>, Requirements>(
-        processor, requirements);
+    auto pair = addProcessorInternal<T, Processor>();
     processors.push_back(pair);
-    entity_manager.addRequirements(requirements);
+    entity_manager.addRequirements(pair.second);
   }
 
   template<class T>
   void addRenderer() {
-    auto renderer = std::shared_ptr<T>(new T(entity_manager));
-    auto requirements = renderer->chooseRequirements();
-    auto pair = std::pair<std::shared_ptr<Renderer>, Requirements>(
-        renderer, requirements);
+    auto pair = addProcessorInternal<T, Renderer>();
     renderers.push_back(pair);
-    addProcessor<T>();
+    entity_manager.addRequirements(pair.second);
   }
 
  private:
@@ -47,6 +41,13 @@ class Engine {
   std::vector<std::pair<std::shared_ptr<Renderer>, Requirements>> renderers;
 
   bool init();
+
+  template<class T, class U>
+  std::pair<std::shared_ptr<U>, Requirements> addProcessorInternal() {
+    auto processor = std::shared_ptr<T>(new T(entity_manager));
+    auto requirements = processor->chooseRequirements();
+    return std::pair<std::shared_ptr<U>, Requirements>(processor, requirements);
+  }
 };
 
 #endif // ENGINE_H_
