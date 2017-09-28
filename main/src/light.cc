@@ -112,7 +112,7 @@ void Light::createOcclusionMask(GPU_Target* gpu_target,
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    image->draw(gpu_target, x, y, occlusion_mask_shader, internal_camera);
+    image->draw(gpu_target, x, y, 0, occlusion_mask_shader, internal_camera);
     glDisable(GL_BLEND);
   }
 
@@ -132,7 +132,8 @@ void Light::createShadowMap(GPU_Target* gpu_target) {
       -(gpu_target->h/2.0 - height/2.0)));
 
   shadow_map_shader->setOcclusionMask(occlusion_mask->getTexture());
-  shadow_map->draw(gpu_target, 0, 0, shadow_map_shader, internal_camera, false);
+  shadow_map->draw(gpu_target, 0, 0, 0, shadow_map_shader, internal_camera,
+      false);
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -147,7 +148,8 @@ void Light::createShadowMask(GPU_Target* gpu_target) {
       Vector(gpu_target->w/2 - size/2, -(gpu_target->h/2 - size/2)));
 
   shadow_mask_shader->setShadowMap(shadow_map->getTexture());
-  shadow_mask->draw(gpu_target, 0, 0, shadow_mask_shader, internal_camera, false);
+  shadow_mask->draw(gpu_target, 0, 0, 0, shadow_mask_shader, internal_camera,
+      false);
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

@@ -33,15 +33,17 @@ Image::~Image() {
   delete default_camera;
 }
 
-void Image::draw(GPU_Target* gpu_target, float x, float y, Shader* shader,
-    Camera* camera, bool bind_texture) {
-  drawInternal(gpu_target, x, y, width, height, shader, camera, bind_texture);
+void Image::draw(GPU_Target* gpu_target, float x, float y, float angle,
+    Shader* shader, Camera* camera, bool bind_texture) {
+  drawInternal(gpu_target, x, y, width, height, angle, shader, camera,
+      bind_texture);
 }
 
 void Image::draw(GPU_Target* gpu_target, float x, float y, uint32_t width,
-    uint32_t height, Shader* shader, Camera* camera,
+    uint32_t height, float angle, Shader* shader, Camera* camera,
     bool bind_texture) {
-  drawInternal(gpu_target, x, y, width, height, shader, camera, bind_texture);
+  drawInternal(gpu_target, x, y, width, height, angle, shader, camera,
+      bind_texture);
 }
 
 GLuint Image::getTexture() {
@@ -120,8 +122,8 @@ void Image::setTextureData(uint32_t width, uint32_t height, uint8_t* data) {
 }
 
 void Image::drawInternal(GPU_Target* gpu_target, float x, float y,
-    uint32_t width, uint32_t height, Shader* shader, Camera* camera,
-    bool bind_texture) {
+    uint32_t width, uint32_t height, float angle, Shader* shader,
+    Camera* camera, bool bind_texture) {
   Shader* image_shader = shader == NULL ? &texture_shader : shader;
   Camera* image_camera = camera == NULL ? default_camera : camera;
   if (camera == NULL) {
@@ -133,6 +135,7 @@ void Image::drawInternal(GPU_Target* gpu_target, float x, float y,
       glm::vec3(x, -y, 0.0f));
   model_matrix = glm::scale(model_matrix,
       glm::vec3((float) width, (float) height, 1.0f));
+  model_matrix = glm::rotate(model_matrix, angle, glm::vec3(0.0f, 0.0f, 1.0f));
   image_shader->setModelMatrix(model_matrix);
   image_shader->setMvpMatrix(view_projection_matrix * model_matrix);
 

@@ -2,12 +2,12 @@
 #define TRANSFORM_COMPONENT_H_
 
 #include "component.h"
-#include "vector.h"
+#include "transform.h"
 
 class TransformComponent : public Component<TransformComponent> {
  public:
   TransformComponent();
-  Vector position;
+  Transform transform;
 };
 
 #endif // TRANSFORM_COMPONENT_H_

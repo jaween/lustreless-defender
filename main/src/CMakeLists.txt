@@ -25,6 +25,7 @@ set(LIBRARY_SOURCE
   ${CMAKE_CURRENT_SOURCE_DIR}/simple_renderer.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/room.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/vector.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/transform.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/shader.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/wave.cc
 )

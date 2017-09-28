@@ -18,11 +18,11 @@ class Image
   Image(uint32_t width, uint32_t height);
   Image(std::string filename);
   ~Image();
-  void draw(GPU_Target* gpu_target, float x, float y, Shader* shader=NULL,
-      Camera* camera = NULL, bool bind_texture = true);
+  void draw(GPU_Target* gpu_target, float x, float y, float angle=0,
+      Shader* shader=NULL, Camera* camera = NULL, bool bind_texture = true);
   void draw(GPU_Target* gpu_target, float x, float y, uint32_t width,
-      uint32_t height, Shader* shader=NULL, Camera* camera = NULL,
-      bool bind_texture = true);
+      uint32_t height, float angle=0, Shader* shader=NULL,
+      Camera* camera = NULL, bool bind_texture = true);
   GLuint getTexture();
   uint32_t getWidth() const;
   uint32_t getHeight() const;
@@ -42,7 +42,7 @@ class Image
   void init();
   void setTextureData(uint32_t width, uint32_t height, uint8_t* data);
   void drawInternal(GPU_Target* gpu_target, float x, float y, uint32_t width,
-      uint32_t height, Shader* shader=NULL, Camera* camera = NULL,
+      uint32_t height, float angle, Shader* shader=NULL, Camera* camera = NULL,
       bool bind_texture = true);
 };
 

@@ -1,4 +1,5 @@
 #include "SDL_gpu.h"
+#include <cmath>
 
 #include "light_component.h"
 #include "simple_renderer.h"
@@ -30,9 +31,13 @@ void SimpleRenderer::render(long ms, const std::set<Entity>& entities,
     auto transform = entity_manager.getComponent<TransformComponent>(entity);
     auto render = entity_manager.getComponent<RenderComponent>(entity);
     auto light = entity_manager.getComponent<LightComponent>(entity);
-    render->getImage()->draw(gpu_target, transform->position.x,
-        transform->position.y);
+    render->getImage()->draw(
+        gpu_target,
+        transform->transform.position.x,
+        transform->transform.position.y,
+        transform->transform.rotation.angle() * 180 / M_PI);
+    transform->transform.rotation.rotate(0.01f * M_PI / 180.0f);
 
-    light->light->draw(gpu_target, transform->position);
+    light->light->draw(gpu_target, transform->transform.position);
   }
 }
