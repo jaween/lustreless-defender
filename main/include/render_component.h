@@ -3,6 +3,7 @@
 
 #include "SDL_gpu.h"
 #include <string>
+#include <memory>
 
 #include "component.h"
 #include "image.h"
@@ -10,12 +11,11 @@
 class RenderComponent : public Component<RenderComponent> {
  public:
   RenderComponent();
-  ~RenderComponent();
   void setImage(std::string filename);
-  Image* getImage();
+  std::shared_ptr<Image> getImage();
 
  private:
-  Image* image;
+  std::shared_ptr<Image> image;
 };
 
 #endif // RENDER_COMPONENT_H_

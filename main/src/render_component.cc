@@ -4,16 +4,10 @@ RenderComponent::RenderComponent() {
   image = NULL;
 }
 
-RenderComponent::~RenderComponent() {
-  if (image != NULL) {
-    delete image;
-  }
-}
-
 void RenderComponent::setImage(std::string filename) {
-  image = new Image(filename);
+  image = std::shared_ptr<Image>(new Image(filename));
 }
 
-Image* RenderComponent::getImage() {
+std::shared_ptr<Image> RenderComponent::getImage() {
   return image;
 }

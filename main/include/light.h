@@ -16,7 +16,7 @@
  */
 class Light : public EntityOld {
  public:
-  Light(SDL_Colour colour);
+  Light(SDL_Colour colour, uint16_t size);
   ~Light();
   void draw(GPU_Target* gpu_target) override;
   void draw(GPU_Target* gpu_target, const Vector& position);

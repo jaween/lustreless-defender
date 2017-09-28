@@ -1,26 +1,25 @@
 #include <SDL2/SDL.h>
 
 #include "controlled_movement.h"
+#include "input_component.h"
 #include "transform_component.h"
 
 ControlledMovement::ControlledMovement(EntityManager& entity_manager)
-    : Processor(entity_manager) {
-  // No implementation
-}
+    : Processor(entity_manager) { }
 
 Requirements ControlledMovement::chooseRequirements() const {
   Requirements requirements = {
-    TransformComponent::getTypeId()
+    TransformComponent::getTypeId(),
+    InputComponent::getTypeId()
   };
   return requirements;
 }
 
 void ControlledMovement::update(long ms, const std::set<Entity>& entities) {
-  const Uint8* key_states = SDL_GetKeyboardState(NULL);
+  const uint8_t* key_states = SDL_GetKeyboardState(NULL);
 
   // Moves the entity using the arrow keys
   for (const auto& entity : entities) {
-    std::vector<ComponentPtr> components = entity_manager.getComponents(entity);
     auto component = entity_manager.getComponent<TransformComponent>(entity);
 
     if (key_states[SDL_SCANCODE_LEFT]) {

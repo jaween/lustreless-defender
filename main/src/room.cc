@@ -3,7 +3,10 @@
 #include <iostream>
 
 #include "controlled_movement.h"
+#include "gun_component.h"
+#include "input_component.h"
 #include "light_component.h"
+#include "player_shooter.h"
 #include "render_component.h"
 #include "room.h"
 #include "simple_renderer.h"
@@ -40,21 +43,31 @@ void Room::init() {
   light_count = 2;
   for (int i = 0; i < light_count; i++) {
     SDL_Color colour = { 1, 1, 1, 1 };
-    Light* light = new Light(colour);
+    Light* light = new Light(colour, 400);
     lights.push_back(light);
   }
   lights.at(0)->setColour(first_colour);
   lights.at(1)->setColour(second_colour);
 
   engine.addProcessor<ControlledMovement>();
+  engine.addProcessor<PlayerShooter>();
   engine.addRenderer<SimpleRenderer>();
   Entity entity1 = entity_manager.createEntity();
   entity_manager.addComponent<TransformComponent>(entity1);
-  std::shared_ptr<LightComponent> light_component = entity_manager.addComponent<LightComponent>(entity1);
+  entity_manager.addComponent<InputComponent>(entity1);
+  auto light_component = entity_manager.addComponent<LightComponent>(entity1);
   SDL_Color colour = { 0xFF, 0x00, 0xFF, 0xFF };
-  light_component->setColour(colour);
-  std::shared_ptr<RenderComponent> render_component = entity_manager.addComponent<RenderComponent>(entity1);
+  light_component->setParameters(colour, 400);
+  auto render_component = entity_manager.addComponent<RenderComponent>(entity1);
   render_component->setImage("main/assets/sprites/non_convex.png");
+  auto gun = entity_manager.addComponent<GunComponent>(entity1);
+  Transform left;
+  left.position.x = -20;
+  Transform right;
+  left.position.x = 20;
+  gun->setNodes({ left, right });
+  std::set<ComponentId> r = { TransformComponent::getTypeId(), GunComponent::getTypeId(), InputComponent::getTypeId() };
+  auto entities = entity_manager.getEntities(r);
 }
 
 void Room::update() {

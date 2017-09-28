@@ -10,7 +10,7 @@
 class LightComponent : public Component<LightComponent> {
  public:
   LightComponent();
-  void setColour(SDL_Color colour);
+  void setParameters(SDL_Color colour, uint16_t);
   std::shared_ptr<Light> light;
 };
 

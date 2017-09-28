@@ -3,8 +3,6 @@
 
 #include "component.h"
 
-class InputComponent : public Component<InputComponent> {
- public:
-  InputComponent();
-};
+class InputComponent : public Component<InputComponent> { };
+
 #endif // INPUT_COMPONENT_H_

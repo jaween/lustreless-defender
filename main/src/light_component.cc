@@ -1,10 +1,7 @@
 #include "light_component.h"
 
-LightComponent::LightComponent() {
-  SDL_Color colour = { 0xFF, 0xFF, 0xFF, 0xFF };
-  light = std::make_shared<Light>(colour);
-}
+LightComponent::LightComponent() { }
 
-void LightComponent::setColour(SDL_Color colour) {
-  light->setColour(colour);
+void LightComponent::setParameters(SDL_Color colour, uint16_t size) {
+ light = std::make_shared<Light>(colour, size);
 }
