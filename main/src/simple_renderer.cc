@@ -2,7 +2,8 @@
 #include <cmath>
 #include <memory>
 #include <vector>
-
+#include <iostream>
+#include "collidable_component.h"
 #include "image.h"
 #include "light_component.h"
 #include "simple_renderer.h"
@@ -13,15 +14,16 @@
 
 SimpleRenderer::SimpleRenderer(EntityManager& entity_manager)
     : Renderer(entity_manager) {
+  // Lights
   requirements = {
     TransformComponent::getTypeId(),
     LightComponent::getTypeId()
   };
 
+  // Lightable objects
   interests = {
     TransformComponent::getTypeId(),
     RenderComponent::getTypeId()
-    // CollidableComponent::getTypeId()
   };
 
   shader = std::shared_ptr<HighlightShader>(new HighlightShader);
@@ -34,7 +36,10 @@ void SimpleRenderer::render(long ms, GPU_Target* gpu_target) {
   for (const auto& entity : lightables) {
     auto transform = entity_manager.getComponent<TransformComponent>(entity);
     auto render = entity_manager.getComponent<RenderComponent>(entity);
-    objects[transform->transform] = render->getImage();
+    auto collidable = entity_manager.getComponent<CollidableComponent>(entity);
+    if (collidable != nullptr) {
+      objects[transform->transform] = render->getImage();
+    }
   }
 
   // Saves the lights to a list, and draws each light

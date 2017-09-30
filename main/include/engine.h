@@ -20,19 +20,21 @@ class Engine {
   int16_t getHeight() const;
 
   template<class T>
-  void addProcessor() {
+  std::shared_ptr<T> addProcessor() {
     std::shared_ptr<Processor> processor =
         std::shared_ptr<T>(new T(entity_manager));
     processors.push_back(processor);
     addRequirements(processor);
+    return std::static_pointer_cast<T>(processor);
   }
 
   template<class T>
-  void addRenderer() {
+  std::shared_ptr<T> addRenderer() {
     std::shared_ptr<Renderer> renderer =
         std::shared_ptr<T>(new T(entity_manager));
     renderers.push_back(renderer);
     addRequirements(renderer);
+    return std::static_pointer_cast<T>(renderer);
   }
 
  private:

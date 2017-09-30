@@ -2,6 +2,7 @@
 #include <cmath>
 #include <iostream>
 
+#include "collidable_component.h"
 #include "controlled_movement.h"
 #include "gun_component.h"
 #include "input_component.h"
@@ -24,8 +25,9 @@ void Room::init() {
   // Setup the processors and the renderers
   engine.addProcessor<ControlledMovement>();
   engine.addProcessor<PlayerShooter>();
-  engine.addProcessor<Movement>();
+  auto movement_processor = engine.addProcessor<Movement>();
   engine.addRenderer<SimpleRenderer>();
+  movement_processor->setDimensions(engine.getWidth(), engine.getHeight());
 
   // Component assemblages
   createTurret();
@@ -37,8 +39,6 @@ void Room::init() {
 void Room::createTurret() {
   Entity turret = entity_manager.createEntity();
 
-  entity_manager.addComponent<InputComponent>(turret);
-
   auto render_component = entity_manager.addComponent<RenderComponent>(turret);
   render_component->setImage("main/assets/sprites/turret.png");
 
@@ -47,6 +47,12 @@ void Room::createTurret() {
   transform_component->transform.position.set(0,
       -engine.getHeight() / 2 + 40);
   transform_component->transform.rotation.set(0, 1);
+
+  entity_manager.addComponent<InputComponent>(turret);
+
+  auto collidable_component =
+      entity_manager.addComponent<CollidableComponent>(turret);
+  collidable_component->setRadius(75);
 
   auto gun = entity_manager.addComponent<GunComponent>(turret);
   Transform left;
@@ -95,9 +101,9 @@ void Room::createBackgroundElements() {
       entity_manager.addComponent<TransformComponent>(entity);
   transform_component->transform.position.set(0, 0);
 
-  /*auto render_component =
+  auto render_component =
       entity_manager.addComponent<RenderComponent>(entity);
-  render_component->setImage("main/assets/sprites/background.png");*/
+  render_component->setImage("main/assets/sprites/background.png");
 }
 
 void Room::createMisc() {
@@ -110,6 +116,10 @@ void Room::createMisc() {
   auto render_component =
       entity_manager.addComponent<RenderComponent>(entity);
   render_component->setImage("main/assets/sprites/non_convex.png");
+
+  auto collidable_component =
+      entity_manager.addComponent<CollidableComponent>(entity);
+  collidable_component->setRadius(75);
 }
 
 void Room::update() {

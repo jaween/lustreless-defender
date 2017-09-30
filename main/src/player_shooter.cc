@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <cmath>
 
+#include "collidable_component.h"
 #include "gun_component.h"
 #include "input_component.h"
 #include "kinetic_component.h"
@@ -66,6 +67,10 @@ void PlayerShooter::createBullet(const Transform& entity_transform,
   velocity.normalise();
   velocity *= 8;
   kinetic_component->velocity = velocity;
+
+  auto collidable_component =
+      entity_manager.addComponent<CollidableComponent>(bullet);
+  collidable_component->setRadius(70);
 
   auto render_component = entity_manager.addComponent<RenderComponent>(bullet);
   render_component->setImage("main/assets/sprites/bullet.png");
