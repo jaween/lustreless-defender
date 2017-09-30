@@ -151,7 +151,8 @@ void Image::drawInternal(GPU_Target* gpu_target, float x, float y,
       glm::vec3(x, -y, 0.0f));
   model_matrix = glm::scale(model_matrix,
       glm::vec3((float) width, (float) height, 1.0f));
-  model_matrix = glm::rotate(model_matrix, angle, glm::vec3(0.0f, 0.0f, 1.0f));
+  model_matrix = glm::rotate(model_matrix,
+      -angle, glm::vec3(0.0f, 0.0f, 1.0f));
   image_shader->setModelMatrix(model_matrix);
   image_shader->setMvpMatrix(view_projection_matrix * model_matrix);
 

@@ -6,6 +6,7 @@
 #include "gun_component.h"
 #include "input_component.h"
 #include "light_component.h"
+#include "movement.h"
 #include "player_shooter.h"
 #include "render_component.h"
 #include "room.h"
@@ -49,25 +50,34 @@ void Room::init() {
   lights.at(0)->setColour(first_colour);
   lights.at(1)->setColour(second_colour);
 
+  // Creating entities and adding components in the new ECP model
   engine.addProcessor<ControlledMovement>();
   engine.addProcessor<PlayerShooter>();
+  engine.addProcessor<Movement>();
   engine.addRenderer<SimpleRenderer>();
   Entity entity1 = entity_manager.createEntity();
-  entity_manager.addComponent<TransformComponent>(entity1);
+
   entity_manager.addComponent<InputComponent>(entity1);
+
+  auto transform_component =
+      entity_manager.addComponent<TransformComponent>(entity1);
+  transform_component->transform.rotation.set(0, 1);
+
   auto light_component = entity_manager.addComponent<LightComponent>(entity1);
   SDL_Color colour = { 0xFF, 0x00, 0xFF, 0xFF };
-  light_component->setParameters(colour, 400);
+  light_component->setParameters(colour, 200);
+
   auto render_component = entity_manager.addComponent<RenderComponent>(entity1);
   render_component->setImage("main/assets/sprites/non_convex.png");
+
   auto gun = entity_manager.addComponent<GunComponent>(entity1);
   Transform left;
-  left.position.x = -20;
+  left.position.x = 40;
+  left.position.y = 20;
   Transform right;
-  left.position.x = 20;
+  right.position.x = 40;
+  right.position.y = -20;
   gun->setNodes({ left, right });
-  std::set<ComponentId> r = { TransformComponent::getTypeId(), GunComponent::getTypeId(), InputComponent::getTypeId() };
-  auto entities = entity_manager.getEntities(r);
 }
 
 void Room::update() {

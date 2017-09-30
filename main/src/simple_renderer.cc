@@ -31,7 +31,7 @@ void SimpleRenderer::render(long ms, const std::set<Entity>& entities,
         gpu_target,
         transform->transform.position.x,
         transform->transform.position.y,
-        transform->transform.rotation.angle() * 180 / M_PI);
+        transform->transform.rotation.angle());
 
     light->light->draw(gpu_target, transform->transform.position);
   }

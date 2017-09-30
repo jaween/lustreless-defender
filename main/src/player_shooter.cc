@@ -1,9 +1,9 @@
 #include <SDL2/SDL.h>
 #include <cmath>
-#include <iostream>
 
 #include "gun_component.h"
 #include "input_component.h"
+#include "kinetic_component.h"
 #include "light_component.h"
 #include "player_shooter.h"
 #include "render_component.h"
@@ -28,10 +28,10 @@ void PlayerShooter::update(long ms, const std::set<Entity>& entities) {
     auto transform = entity_manager.getComponent<TransformComponent>(entity);
     auto gun = entity_manager.getComponent<GunComponent>(entity);
     if (key_states[SDL_SCANCODE_LEFT]) {
-      transform->transform.rotation.rotate(-0.05f * M_PI / 180.0f);
+      transform->transform.rotation.rotate(2.5f * M_PI / 180.0f);
     }
     if (key_states[SDL_SCANCODE_RIGHT]) {
-      transform->transform.rotation.rotate(0.05f * M_PI / 180.0f);
+      transform->transform.rotation.rotate(-2.5f * M_PI / 180.0f);
     }
 
     uint32_t time = SDL_GetTicks();
@@ -49,15 +49,26 @@ void PlayerShooter::update(long ms, const std::set<Entity>& entities) {
 void PlayerShooter::createBullet(const Transform& entity_transform,
                                  const Transform& bullet_transform) {
   Entity bullet = entity_manager.createEntity();
+
   auto light_component =
       entity_manager.addComponent<LightComponent>(bullet);
   SDL_Color colour = { 0xFF, 0xFF, 0x00, 0xFF };
   light_component->setParameters(colour, 75);
+
   auto transform_component =
       entity_manager.addComponent<TransformComponent>(bullet);
-  transform_component->transform.position = entity_transform.position +
-      bullet_transform.position;
-  transform_component->transform.rotation = entity_transform.rotation.x;
+  Vector offset = bullet_transform.position;
+  offset.rotate(entity_transform.rotation.angle());
+  transform_component->transform.position = entity_transform.position + offset;
+  transform_component->transform.rotation = entity_transform.rotation;
+
+  auto kinetic_component =
+      entity_manager.addComponent<KineticComponent>(bullet);
+  Vector velocity = entity_transform.rotation;
+  velocity.normalise();
+  velocity *= 8;
+  kinetic_component->velocity = velocity;
+
   auto render_component = entity_manager.addComponent<RenderComponent>(bullet);
   render_component->setImage("main/assets/sprites/bullet.png");
 }
