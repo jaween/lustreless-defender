@@ -65,7 +65,7 @@ void Room::init() {
 
   auto light_component = entity_manager.addComponent<LightComponent>(entity1);
   SDL_Color colour = { 0xAA, 0x00, 0xAA, 0xFF };
-  light_component->setParameters(colour, 200);
+  light_component->setParameters(colour, 400);
 
   auto render_component = entity_manager.addComponent<RenderComponent>(entity1);
   render_component->setImage("main/assets/sprites/non_convex.png");
@@ -88,9 +88,9 @@ void Room::init() {
   render_component =
       entity_manager.addComponent<RenderComponent>(entity2);
   render_component->setImage("main/assets/sprites/non_convex.png");
-  light_component = entity_manager.addComponent<LightComponent>(entity2);
+  /*auto light_component = entity_manager.addComponent<LightComponent>(entity2);
   colour = { 0x44, 0x44, 0x00, 0xFF };
-  light_component->setParameters(colour, 400);
+  light_component->setParameters(colour, 400);*/
 }
 
 void Room::update() {
@@ -139,12 +139,12 @@ void Room::draw(GPU_Target* gpu_target) {
     //lights.at(i)->draw(gpu_target);
   }
 
-  highlight_shader->setLights(lights);
+  //highlight_shader->setLights(lights);
 
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+  //glEnable(GL_BLEND);
+  //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
   //image->draw(gpu_target, 0, 0, angle * 0.01f);
-  glDisable(GL_BLEND);
+  //glDisable(GL_BLEND);
 
   for (int i = 0; i < waves.size(); i++) {
     //waves.at(i)->draw(gpu_target);

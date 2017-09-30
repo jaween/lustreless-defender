@@ -43,7 +43,7 @@ void Engine::run(Room& room) {
       processor->update(temp_update_ms);
     }
 
-    SDL_Color color = { 0x00, 0x00, 0x00, 0xFF };
+    SDL_Color color = { 0x00, 0x00, 0x00, 0x00 };
     GPU_ClearColor(window, color);
     room.draw(window);
     for (const auto& renderer : renderers) {

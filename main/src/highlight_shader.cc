@@ -24,7 +24,8 @@ HighlightShader::HighlightShader()
       GPU_GetUniformLocation(program_id, kLightSizesName.c_str());
 }
 
-void HighlightShader::setLights(std::vector<Light*> lights) {
+void HighlightShader::setLights(
+    const std::vector<std::pair<Transform, std::shared_ptr<Light>>>& lights) {
   activate();
 
   GPU_SetUniformui(light_count_location, lights.size());
@@ -34,14 +35,14 @@ void HighlightShader::setLights(std::vector<Light*> lights) {
   unsigned int sizes[lights.size()];
   float colours[lights.size() * 3];
   for (int i = 0; i < lights.size(); i++) {
-    SDL_Color colour = lights.at(i)->getColour();
+    SDL_Color colour = lights.at(i).second->getColour();
     types[i] = 1;
-    positions[i * 2 + 0] = lights.at(i)->getPosition().x;
-    positions[i * 2 + 1] = lights.at(i)->getPosition().y;
+    positions[i * 2 + 0] = lights.at(i).first.position.x;
+    positions[i * 2 + 1] = lights.at(i).first.position.y;
     colours[i * 3 + 0] = colour.r / 255.0f;
     colours[i * 3 + 1] = colour.g / 255.0f;
     colours[i * 3 + 2] = colour.b / 255.0f;
-    sizes[i] = lights.at(i)->getSize();
+    sizes[i] = lights.at(i).second->getSize();
   }
 
   for (int i = 0; i < lights.size(); i++) {

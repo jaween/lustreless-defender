@@ -1,7 +1,11 @@
+#ifndef HIGHLIGHT_SHADER_H_
+#define HIGHLIGHT_SHADER_H_
+
 #include <vector>
 
-#include "shader.h"
 #include "light.h"
+#include "shader.h"
+#include "transform.h"
 
 /**
  * Shader which colours a piece of geometry based on nearby lights in the scene.
@@ -9,7 +13,8 @@
 class HighlightShader : public Shader {
  public:
   HighlightShader();
-  void setLights(std::vector<Light*> lights);
+  void setLights(
+      const std::vector<std::pair<Transform, std::shared_ptr<Light>>>& lights);
   virtual void activate() override;
   virtual void deactivate() override;
 
@@ -28,3 +33,5 @@ class HighlightShader : public Shader {
   int light_colours_location;
   int light_sizes_location;
 };
+
+#endif // HIGHLIGHT_SHADER_H_

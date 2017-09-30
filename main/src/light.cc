@@ -7,6 +7,7 @@
 
 Light::Light(SDL_Color colour, uint16_t size) {
   // TODO(jaween): Figure out how to get light sizes to be larger than screen
+  this->colour = colour;
   this->size = std::min(size, (uint16_t) 400);
 
   // TODO(jaween): Figure out why perimeter of object is not fully lit
@@ -109,7 +110,7 @@ void Light::createOcclusionMask(
   internal_camera->setPosition(camera_position + position);
 
   // Drawing occluders onto mask
-  GPU_ClearRGBA(gpu_target, 1, 0, 1, 1);
+  GPU_ClearRGBA(gpu_target, 0, 0, 0, 0);
   for (const auto object : objects) {
     auto transform = object.first;
     auto image = object.second;
@@ -144,6 +145,7 @@ void Light::createShadowMap(GPU_Target* gpu_target) {
         gpu_target->w/2.0 - width/2.0,
       -(gpu_target->h/2.0 - height/2.0)));
 
+  GPU_ClearRGBA(gpu_target, 0, 0, 0, 0);
   shadow_map_shader->setOcclusionMask(occlusion_mask->getTexture());
   shadow_map->draw(gpu_target, 0, 0, 0, shadow_map_shader, internal_camera,
       false);
@@ -160,6 +162,7 @@ void Light::createShadowMask(GPU_Target* gpu_target) {
   internal_camera->setPosition(
       Vector(gpu_target->w/2 - size/2, -(gpu_target->h/2 - size/2)));
 
+  GPU_ClearRGBA(gpu_target, 0, 0, 0, 0);
   shadow_mask->setBlendingEnabled(false);
   shadow_mask_shader->setShadowMap(shadow_map->getTexture());
   shadow_mask->draw(gpu_target, 0, 0, 0, shadow_mask_shader, internal_camera,
