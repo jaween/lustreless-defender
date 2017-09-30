@@ -3,17 +3,15 @@
 #include "transform_component.h"
 
 Movement::Movement(EntityManager& entity_manager)
-    : Processor(entity_manager) { }
-
-Requirements Movement::chooseRequirements() const {
-  Requirements requirements = {
+    : Processor(entity_manager) {
+  requirements = {
     TransformComponent::getTypeId(),
     KineticComponent::getTypeId()
   };
-  return requirements;
 }
 
-void Movement::update(long ms, const std::set<Entity>& entities) {
+void Movement::update(long ms) {
+  auto entities = entity_manager.getEntities(requirements);
   for (const auto& entity : entities) {
     auto transform_component =
         entity_manager.getComponent<TransformComponent>(entity);

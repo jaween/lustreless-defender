@@ -8,21 +8,16 @@
 #include "vector.h"
 
 SimpleRenderer::SimpleRenderer(EntityManager& entity_manager)
-    : Renderer(entity_manager) { }
-
-Requirements SimpleRenderer::chooseRequirements() const {
-  Requirements requirements = {
+    : Renderer(entity_manager) {
+  requirements = {
     TransformComponent::getTypeId(),
     RenderComponent::getTypeId(),
     LightComponent::getTypeId()
   };
-  return requirements;
 }
 
-void SimpleRenderer::update(long ms, const std::set<Entity>& entities) { }
-
-void SimpleRenderer::render(long ms, const std::set<Entity>& entities,
-                            GPU_Target* gpu_target) {
+void SimpleRenderer::render(long ms, GPU_Target* gpu_target) {
+  auto entities = entity_manager.getEntities(requirements);
   for (const auto& entity : entities) {
     auto transform = entity_manager.getComponent<TransformComponent>(entity);
     auto render = entity_manager.getComponent<RenderComponent>(entity);

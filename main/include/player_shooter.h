@@ -7,8 +7,7 @@
 class PlayerShooter : public Processor {
  public:
   PlayerShooter(EntityManager& entity_manager);
-  virtual Requirements chooseRequirements() const;
-  virtual void update(long ms, const std::set<Entity>& entities);
+  virtual void update(long ms);
 
  private:
   void createBullet(const Transform& entity_transform,

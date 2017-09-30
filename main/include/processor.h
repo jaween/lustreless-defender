@@ -10,11 +10,14 @@
 class Processor {
  public:
   Processor(EntityManager& entity_manager);
-  virtual Requirements chooseRequirements() const = 0;
-  virtual void update(long ms, const std::set<Entity>& entities) = 0;
+  Requirements getRequirements() const;
+  Requirements getInterests() const;
+  virtual void update(long ms) = 0;
 
  protected:
   EntityManager& entity_manager;
+  Requirements requirements;
+  Requirements interests;
 };
 
 #endif // PROCESSOR_H_

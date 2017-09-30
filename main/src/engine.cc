@@ -38,22 +38,17 @@ void Engine::run(Room& room) {
     }
 
     room.update();
-    for (auto& pair : processors) {
+    for (const auto& processor : processors) {
       const long temp_update_ms = 16;
-      pair.first->update(
-          temp_update_ms,
-          entity_manager.getEntities(pair.second));
+      processor->update(temp_update_ms);
     }
 
     SDL_Color color = { 0x00, 0x00, 0x00, 0xFF };
     GPU_ClearColor(window, color);
     room.draw(window);
-    for (auto& pair : renderers) {
+    for (const auto& renderer : renderers) {
       const long temp_update_ms = 16;
-      pair.first->render(
-          temp_update_ms,
-          entity_manager.getEntities(pair.second),
-          window);
+      renderer->render(temp_update_ms, window);
     }
 
     GPU_Flip(window);
@@ -78,4 +73,16 @@ bool Engine::init() {
   }
 
   return true;
+}
+
+void Engine::addRequirements(const std::shared_ptr<Processor>& p) {
+  auto requirements = p->getRequirements();
+  if (requirements.size() > 0) {
+    entity_manager.addRequirements(requirements);
+  }
+
+  auto interests = p->getInterests();
+  if (interests.size() > 0) {
+    entity_manager.addRequirements(interests);
+  }
 }

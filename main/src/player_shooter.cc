@@ -10,20 +10,18 @@
 #include "transform_component.h"
 
 PlayerShooter::PlayerShooter(EntityManager& entity_manager)
-    : Processor(entity_manager) { }
-
-Requirements PlayerShooter::chooseRequirements() const {
-  Requirements requirements = {
+    : Processor(entity_manager) {
+  requirements = {
     TransformComponent::getTypeId(),
     InputComponent::getTypeId(),
     GunComponent::getTypeId()
   };
-  return requirements;
 }
 
-void PlayerShooter::update(long ms, const std::set<Entity>& entities) {
+void PlayerShooter::update(long ms) {
   const uint8_t* key_states = SDL_GetKeyboardState(NULL);
 
+  auto entities = entity_manager.getEntities(requirements);
   for (const auto& entity : entities) {
     auto transform = entity_manager.getComponent<TransformComponent>(entity);
     auto gun = entity_manager.getComponent<GunComponent>(entity);

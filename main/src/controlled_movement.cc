@@ -5,19 +5,17 @@
 #include "transform_component.h"
 
 ControlledMovement::ControlledMovement(EntityManager& entity_manager)
-    : Processor(entity_manager) { }
-
-Requirements ControlledMovement::chooseRequirements() const {
-  Requirements requirements = {
+    : Processor(entity_manager) {
+  requirements = {
     TransformComponent::getTypeId(),
     InputComponent::getTypeId()
   };
-  return requirements;
 }
 
-void ControlledMovement::update(long ms, const std::set<Entity>& entities) {
+void ControlledMovement::update(long ms) {
   const uint8_t* key_states = SDL_GetKeyboardState(NULL);
 
+  auto entities = entity_manager.getEntities(requirements);
   // Moves the entity using the arrow keys
   for (const auto& entity : entities) {
     auto component = entity_manager.getComponent<TransformComponent>(entity);

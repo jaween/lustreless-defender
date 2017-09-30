@@ -6,8 +6,7 @@
 class Movement : public Processor {
  public:
   Movement(EntityManager& entity_manager);
-  virtual Requirements chooseRequirements() const;
-  virtual void update(long ms, const std::set<Entity>& entities);
+  virtual void update(long ms);
 };
 
 #endif // MOVEMENT_H_

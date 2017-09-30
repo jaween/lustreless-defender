@@ -6,8 +6,7 @@
 class ControlledMovement : public Processor {
  public:
   ControlledMovement(EntityManager& entity_manager);
-  virtual Requirements chooseRequirements() const;
-  virtual void update(long ms, const std::set<Entity>& entities);
+  virtual void update(long ms);
 };
 
 #endif // CONTROLLED_MOVEMENT_H_
