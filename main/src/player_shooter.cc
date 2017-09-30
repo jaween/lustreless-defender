@@ -51,7 +51,7 @@ void PlayerShooter::createBullet(const Transform& entity_transform,
   auto light_component =
       entity_manager.addComponent<LightComponent>(bullet);
   SDL_Color colour = { 0xFF, 0xFF, 0x00, 0xFF };
-  light_component->setParameters(colour, 75);
+  light_component->setParameters(colour, 100);
 
   auto transform_component =
       entity_manager.addComponent<TransformComponent>(bullet);

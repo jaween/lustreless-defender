@@ -21,80 +21,99 @@ Room::Room(Engine& engine, EntityManager& entity_manager)
 }
 
 void Room::init() {
-  angle = 0;
-
-  image = new Image("main/assets/sprites/non_convex.png");
-  highlight_shader = new HighlightShader();
-
-  unsigned int first = 0x3299CC;
-  unsigned int second = 0xFF0000;
-  SDL_Color first_colour = {
-      (uint8_t) (first >> 16),
-      (uint8_t) ((first << 16) >> 24),
-      (uint8_t) ((first << 24) >> 24),
-      (uint8_t) (255)
-  };
-  SDL_Color second_colour = {
-      (uint8_t) (second >> 16),
-      (uint8_t) ((second << 16) >> 24),
-      (uint8_t) ((second << 24) >> 24),
-      (uint8_t) (255)
-  };
-
-  light_count = 2;
-  for (int i = 0; i < light_count; i++) {
-    SDL_Color colour = { 1, 1, 1, 1 };
-    Light* light = new Light(colour, 400);
-    lights.push_back(light);
-  }
-  lights.at(0)->setColour(first_colour);
-  lights.at(1)->setColour(second_colour);
-
-  // Creating entities and adding components in the new ECP model
+  // Setup the processors and the renderers
   engine.addProcessor<ControlledMovement>();
   engine.addProcessor<PlayerShooter>();
   engine.addProcessor<Movement>();
   engine.addRenderer<SimpleRenderer>();
-  Entity entity1 = entity_manager.createEntity();
 
-  entity_manager.addComponent<InputComponent>(entity1);
+  // Component assemblages
+  createTurret();
+  createBaseLights();
+  createBackgroundElements();
+  createMisc();
+}
+
+void Room::createTurret() {
+  Entity turret = entity_manager.createEntity();
+
+  entity_manager.addComponent<InputComponent>(turret);
+
+  auto render_component = entity_manager.addComponent<RenderComponent>(turret);
+  render_component->setImage("main/assets/sprites/turret.png");
 
   auto transform_component =
-      entity_manager.addComponent<TransformComponent>(entity1);
+      entity_manager.addComponent<TransformComponent>(turret);
+  transform_component->transform.position.set(0,
+      -engine.getHeight() / 2 + 40);
   transform_component->transform.rotation.set(0, 1);
 
-  auto light_component = entity_manager.addComponent<LightComponent>(entity1);
-  SDL_Color colour = { 0xAA, 0x00, 0xAA, 0xFF };
-  light_component->setParameters(colour, 400);
-
-  auto render_component = entity_manager.addComponent<RenderComponent>(entity1);
-  render_component->setImage("main/assets/sprites/non_convex.png");
-
-  auto gun = entity_manager.addComponent<GunComponent>(entity1);
+  auto gun = entity_manager.addComponent<GunComponent>(turret);
   Transform left;
-  left.position.x = 40;
-  left.position.y = 20;
+  left.position.set(40, 20);
   Transform right;
-  right.position.x = 40;
-  right.position.y = -20;
+  right.position.set(40, -20);
   gun->setNodes({ left, right });
+}
 
+void Room::createBaseLights() {
+  const int diameter = engine.getWidth();
 
-  Entity entity2 = entity_manager.createEntity();
+  // Left base light
+  Entity left_light = entity_manager.createEntity();
+
+  auto transform_component =
+      entity_manager.addComponent<TransformComponent>(left_light);
+  transform_component->transform.position.set(
+      -engine.getWidth() / 2 + diameter / 5,
+      -engine.getHeight() / 2 + diameter / 9);
+
+  auto light_component =
+      entity_manager.addComponent<LightComponent>(left_light);
+  SDL_Color colour = { 0xAA, 0x00, 0xAA, 0xFF };
+  light_component->setParameters(colour, diameter);
+
+  // Right base light
+  Entity right_light = entity_manager.createEntity();
+
   transform_component =
-      entity_manager.addComponent<TransformComponent>(entity2);
-  transform_component->transform.position.x = -80;
-  transform_component->transform.position.y = 40;
-  render_component =
-      entity_manager.addComponent<RenderComponent>(entity2);
+      entity_manager.addComponent<TransformComponent>(right_light);
+  transform_component->transform.position.set(
+      engine.getWidth() / 2 - diameter / 5,
+      -engine.getHeight() / 2 + diameter / 9);
+
+  light_component =
+      entity_manager.addComponent<LightComponent>(right_light);
+  colour = { 0xAA, 0x00, 0xAA, 0xFF };
+  light_component->setParameters(colour, diameter);
+}
+
+void Room::createBackgroundElements() {
+  Entity entity = entity_manager.createEntity();
+
+  auto transform_component =
+      entity_manager.addComponent<TransformComponent>(entity);
+  transform_component->transform.position.set(0, 0);
+
+  /*auto render_component =
+      entity_manager.addComponent<RenderComponent>(entity);
+  render_component->setImage("main/assets/sprites/background.png");*/
+}
+
+void Room::createMisc() {
+  Entity entity = entity_manager.createEntity();
+
+  auto transform_component =
+      entity_manager.addComponent<TransformComponent>(entity);
+  transform_component->transform.position.set(-80, 40);
+
+  auto render_component =
+      entity_manager.addComponent<RenderComponent>(entity);
   render_component->setImage("main/assets/sprites/non_convex.png");
-  /*auto light_component = entity_manager.addComponent<LightComponent>(entity2);
-  colour = { 0x44, 0x44, 0x00, 0xFF };
-  light_component->setParameters(colour, 400);*/
 }
 
 void Room::update() {
-  int current_waves_size = waves.size();
+  /*int current_waves_size = waves.size();
   for (int i = 0; i < current_waves_size; i++) {
     //waves.at(i)->update();
   }
@@ -131,7 +150,7 @@ void Room::update() {
   Vector pos1 = Vector();
   pos1.x = 110 * cos(angle * M_PI / 180);
   pos1.y = 110 * sin(angle * M_PI / 180);
-  lights.at(1)->setPosition(pos1);
+  lights.at(1)->setPosition(pos1);*/
 }
 
 void Room::draw(GPU_Target* gpu_target) {

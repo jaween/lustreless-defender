@@ -4,8 +4,8 @@
 #include "engine.h"
 #include "room.h"
 
-const int Engine::kScreenWidth = 640;
-const int Engine::kScreenHeight = 480;
+const int16_t Engine::kScreenWidth = 480;
+const int16_t Engine::kScreenHeight = 640;
 
 Engine::Engine(EntityManager& entity_manager)
     : entity_manager(entity_manager) {
@@ -85,4 +85,12 @@ void Engine::addRequirements(const std::shared_ptr<Processor>& p) {
   if (interests.size() > 0) {
     entity_manager.addRequirements(interests);
   }
+}
+
+int16_t Engine::getWidth() const {
+  return kScreenWidth;
+}
+
+int16_t Engine::getHeight() const {
+  return kScreenHeight;
 }

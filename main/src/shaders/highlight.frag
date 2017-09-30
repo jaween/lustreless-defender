@@ -25,7 +25,8 @@ in vec4 world_position;
 out vec4 fragment_colour;
 
 void main() {
-  float brightness = 0.0;
+  // This starts higher than 0 for visual aesthetic purposes
+  float brightness = 0.9;
   vec3 colour = vec3(0.0);
   // TODO(jaween): Pass in correct worldspace coordinates
   vec2 world_pos2D = vec2(world_position.x, 1.0 - world_position.y);
@@ -45,7 +46,7 @@ void main() {
   }
   brightness = clamp(brightness, 0, 1);
 
-  // Alpha is determined by lights
   vec4 image_value = texture(image, texture_coordinate);
-  fragment_colour = vec4(colour.rgb, image_value * brightness);
+  fragment_colour = vec4(colour.rgb * image_value.rgb,
+                         image_value.a * brightness);
 }

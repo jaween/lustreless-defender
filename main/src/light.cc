@@ -8,7 +8,7 @@
 Light::Light(SDL_Color colour, uint16_t size) {
   // TODO(jaween): Figure out how to get light sizes to be larger than screen
   this->colour = colour;
-  this->size = std::min(size, (uint16_t) 400);
+  this->size = std::min(size, (uint16_t) 480);
 
   // TODO(jaween): Figure out why perimeter of object is not fully lit
   quality = 1;

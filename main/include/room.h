@@ -34,6 +34,10 @@ class Room {
   std::vector<Light*> lights;
   HighlightShader* highlight_shader;
 
+  void createTurret();
+  void createBaseLights();
+  void createBackgroundElements();
+  void createMisc();
   void mergeWaves();
   void printWaves();
 };

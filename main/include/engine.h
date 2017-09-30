@@ -16,6 +16,8 @@ class Engine {
   Engine(EntityManager& entity_manager);
   ~Engine();
   void run(Room& room);
+  int16_t getWidth() const;
+  int16_t getHeight() const;
 
   template<class T>
   void addProcessor() {
@@ -34,8 +36,8 @@ class Engine {
   }
 
  private:
-  static const int kScreenWidth;
-  static const int kScreenHeight;
+  static const int16_t kScreenWidth;
+  static const int16_t kScreenHeight;
 
   GPU_Target* window;
   EntityManager& entity_manager;

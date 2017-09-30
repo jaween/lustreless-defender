@@ -27,7 +27,7 @@ void main() {
     // Doubles radius to match unit circle radius of 1
     // This is a hack. Lights don't seem to light the line of pixels at the
     // edges of objects. This extends the light slighty to cover up that issue.
-    float extra = 0.005;
+    float extra = 0.01;
     float value = occlusion_mask_sample.r > 0 ? 2 * radius + extra : 1;
     occluder_distance = min(occluder_distance, value);
   }
