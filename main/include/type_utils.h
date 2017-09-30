@@ -6,6 +6,8 @@
 #include <utility>
 
 #include "component.h"
+#include "transform.h"
+#include "vector.h"
 
 using Entity = uint64_t;
 using ComponentPtr = std::shared_ptr<BaseComponent>;
@@ -23,4 +25,25 @@ struct SetHasher {
   }
 };
 
+namespace std {
+template<>
+struct hash<Vector> {
+  std::size_t operator()(const Vector& vector) const {
+    size_t hash = 0;
+    boost::hash_combine(hash, vector.x);
+    boost::hash_combine(hash, vector.y);
+    return hash;
+  }
+};
+
+template<>
+struct hash<Transform> {
+  std::size_t operator()(const Transform& transform) const {
+    size_t hash = 0;
+    boost::hash_combine(hash, std::hash<Vector>()(transform.position));
+    boost::hash_combine(hash, std::hash<Vector>()(transform.rotation));
+    return hash;
+  }
+};
+}
 #endif // TYPE_UTILS_H_

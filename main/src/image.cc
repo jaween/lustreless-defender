@@ -106,9 +106,9 @@ void Image::init() {
 
   default_camera = new Camera(0, 0);
 
-  // TODO(jaween): What is a sane default? We want 2D transparency by default
+  // Transparency by default
   blending_enabled = true;
-  blend_sfactor = GL_ONE;
+  blend_sfactor = GL_SRC_ALPHA;
   blend_dfactor = GL_ONE_MINUS_SRC_ALPHA;
 }
 

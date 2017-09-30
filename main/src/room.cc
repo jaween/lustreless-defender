@@ -64,7 +64,7 @@ void Room::init() {
   transform_component->transform.rotation.set(0, 1);
 
   auto light_component = entity_manager.addComponent<LightComponent>(entity1);
-  SDL_Color colour = { 0xFF, 0x00, 0xFF, 0xFF };
+  SDL_Color colour = { 0xAA, 0x00, 0xAA, 0xFF };
   light_component->setParameters(colour, 200);
 
   auto render_component = entity_manager.addComponent<RenderComponent>(entity1);
@@ -78,6 +78,19 @@ void Room::init() {
   right.position.x = 40;
   right.position.y = -20;
   gun->setNodes({ left, right });
+
+
+  Entity entity2 = entity_manager.createEntity();
+  transform_component =
+      entity_manager.addComponent<TransformComponent>(entity2);
+  transform_component->transform.position.x = -80;
+  transform_component->transform.position.y = 40;
+  render_component =
+      entity_manager.addComponent<RenderComponent>(entity2);
+  render_component->setImage("main/assets/sprites/non_convex.png");
+  light_component = entity_manager.addComponent<LightComponent>(entity2);
+  colour = { 0x44, 0x44, 0x00, 0xFF };
+  light_component->setParameters(colour, 400);
 }
 
 void Room::update() {
@@ -108,7 +121,7 @@ void Room::update() {
   std::vector<Image*> images;
   images.push_back(image);
   for (int i = 0; i < lights.size(); i++) {
-    lights.at(i)->setObjects(images);
+    //lights.at(i)->setObjects(images);
   }
 
   Vector pos0 = Vector();
@@ -123,14 +136,14 @@ void Room::update() {
 
 void Room::draw(GPU_Target* gpu_target) {
   for (int i = 0; i < lights.size(); i++) {
-    lights.at(i)->draw(gpu_target);
+    //lights.at(i)->draw(gpu_target);
   }
 
   highlight_shader->setLights(lights);
 
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-  image->draw(gpu_target, 0, 0, angle * 0.01f);
+  //image->draw(gpu_target, 0, 0, angle * 0.01f);
   glDisable(GL_BLEND);
 
   for (int i = 0; i < waves.size(); i++) {

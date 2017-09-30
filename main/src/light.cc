@@ -51,7 +51,13 @@ Light::~Light() {
   delete internal_camera;
 }
 
-void Light::draw(GPU_Target* gpu_target) {
+void Light::draw(
+    GPU_Target* gpu_target,
+    const Vector& position,
+    const std::unordered_map<Transform, std::shared_ptr<Image>>& objects) {
+  this->position.x = position.x;
+  this->position.y = position.y;
+
   // Sets up the projection matrix for the camera
   internal_camera->setOrthographic(
       -gpu_target->w/2.0f,
@@ -59,7 +65,7 @@ void Light::draw(GPU_Target* gpu_target) {
       -gpu_target->h/2.0f,
        gpu_target->h/2.0f);
 
-  createOcclusionMask(gpu_target, objects);
+  createOcclusionMask(gpu_target, position, objects);
   createShadowMap(gpu_target);
   createShadowMask(gpu_target);
 
@@ -69,13 +75,8 @@ void Light::draw(GPU_Target* gpu_target) {
   debug_angle += 0.01f;
 }
 
-void Light::draw(GPU_Target* gpu_target, const Vector& position) {
-  this->position = position;
-  draw(gpu_target);
-}
-
-void Light::setObjects(std::vector<Image*> objects) {
-  this->objects = objects;
+void Light::draw(GPU_Target* gpu_target) {
+  //draw(gpu_target, position, objects);
 }
 
 void Light::setColour(SDL_Color colour) {
@@ -95,8 +96,10 @@ uint16_t Light::getSize() const {
   return size;
 }
 
-void Light::createOcclusionMask(GPU_Target* gpu_target,
-    std::vector<Image*> images) {
+void Light::createOcclusionMask(
+    GPU_Target* gpu_target,
+    const Vector& position,
+    const std::unordered_map<Transform, std::shared_ptr<Image>>& objects) {
   glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
       occlusion_mask->getTexture(), 0);
@@ -107,15 +110,23 @@ void Light::createOcclusionMask(GPU_Target* gpu_target,
 
   // Drawing occluders onto mask
   GPU_ClearRGBA(gpu_target, 1, 0, 1, 1);
-  for (unsigned int i = 0; i < images.size(); i++) {
-    Image* image = objects.at(i);
-    float x = 0;
-    float y = 0;
+  for (const auto object : objects) {
+    auto transform = object.first;
+    auto image = object.second;
 
-    image->setBlendingEnabled(true);
-    image->setBlendMode(GL_SRC_ALPHA, GL_ONE);
-    image->draw(gpu_target, x, y, debug_angle, occlusion_mask_shader, internal_camera);
-    image->setBlendingEnabled(false);
+    // This object is the graphical representation of the source of this light.
+    // We're skipping it so that we don't occlude ourself
+    if (transform.position == position) {
+      continue;
+    }
+
+    image->draw(
+        gpu_target,
+        transform.position.x,
+        transform.position.y,
+        transform.rotation.angle(),
+        occlusion_mask_shader,
+        internal_camera);
   }
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
