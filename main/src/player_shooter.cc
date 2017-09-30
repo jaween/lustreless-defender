@@ -25,12 +25,17 @@ void PlayerShooter::update(long ms) {
   auto entities = entity_manager.getEntities(requirements);
   for (const auto& entity : entities) {
     auto transform = entity_manager.getComponent<TransformComponent>(entity);
+
     auto gun = entity_manager.getComponent<GunComponent>(entity);
     if (key_states[SDL_SCANCODE_LEFT]) {
-      transform->transform.rotation.rotate(2.5f * M_PI / 180.0f);
+      if (transform->transform.rotation.angle() * 180 / M_PI < 150) {
+        transform->transform.rotation.rotate(1.5f * M_PI / 180.0f);
+      }
     }
     if (key_states[SDL_SCANCODE_RIGHT]) {
-      transform->transform.rotation.rotate(-2.5f * M_PI / 180.0f);
+      if (transform->transform.rotation.angle() * 180 / M_PI > 30) {
+        transform->transform.rotation.rotate(-1.5f * M_PI / 180.0f);
+      }
     }
 
     uint32_t time = SDL_GetTicks();
