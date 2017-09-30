@@ -25,6 +25,7 @@ set(LIBRARY_SOURCE
   ${CMAKE_CURRENT_SOURCE_DIR}/controlled_movement.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/movement.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/player_shooter.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/enemy_spawner.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/simple_renderer.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/room.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/vector.cc

@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "collidable_component.h"
+#include "enemy_spawner.h"
 #include "gun_component.h"
 #include "input_component.h"
 #include "light_component.h"
@@ -24,8 +25,12 @@ void Room::init() {
   // Setup the processors and the renderers
   engine.addProcessor<PlayerShooter>();
   auto movement_processor = engine.addProcessor<Movement>();
+  auto enemy_spawner = engine.addProcessor<EnemySpawner>();
   engine.addRenderer<SimpleRenderer>();
   movement_processor->setDimensions(engine.getWidth(), engine.getHeight());
+  enemy_spawner->setImageNames({
+      "main/assets/sprites/turret.png",
+      "main/assets/sprites/non_convex.png"});
 
   // Component assemblages
   createTurret();
@@ -119,19 +124,7 @@ void Room::createBackgroundElements() {
 }
 
 void Room::createMisc() {
-  Entity entity = entity_manager.createEntity();
-
-  auto transform_component =
-      entity_manager.addComponent<TransformComponent>(entity);
-  transform_component->transform.position.set(-80, 40);
-
-  auto render_component =
-      entity_manager.addComponent<RenderComponent>(entity);
-  render_component->setImage("main/assets/sprites/non_convex.png");
-
-  auto collidable_component =
-      entity_manager.addComponent<CollidableComponent>(entity);
-  collidable_component->setRadius(75);
+  // TODO: Background scenery?
 }
 
 void Room::update() {
