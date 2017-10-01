@@ -6,13 +6,15 @@ Description
 Defend your dimly-lit inhabitance against marauders by using a turret that fires
 radiant projectiles.
 
-This the source code for a submission to The Univesity of Adelaide CS Club's
+This is the source code for a submission to The Univesity of Adelaide CS Club's
 Make a Game Competition.
 
 **Team Name** Dining Philosophers
+
 **Team Members** Jaween Ediriweera (a1647468)
 
-All programming and game art by Jaween Ediriweera.
+Programming and game art by Jaween Ediriweera (except for stb_image.h).
+
 
 Controls
 --------
@@ -30,13 +32,14 @@ Dependencies
 
 Usage
 -----
- 1) Clone the SDL_Gpu GitHub repo by running:
+ 1) Clone the SDL_Gpu GitHub repo:
     `git clone https://github.com/grimfang4/sdl-gpu.git sdl-gpu`
  2) Build and install SDL_Gpu by running:
-    `cmake -G "Unix Makefiles"
+    ```cd sdl-gpu
+    cmake -G "Unix Makefiles"
      make
-     sudo make install`
- 3) Run the build script
+     sudo make install```
+ 3) Run the build script:
     `./build.sh`
- 4) Run the game
+ 4) Run the game (inside the root directory of the game):
     `./bin/game`
