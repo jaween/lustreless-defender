@@ -4,7 +4,9 @@
 #include "collidable_component.h"
 #include "collision_detector.h"
 #include "enemy_component.h"
+#include "explosion_component.h"
 #include "game_over_component.h"
+#include "light_component.h"
 #include "player_component.h"
 #include "transform_component.h"
 
@@ -51,6 +53,17 @@ void CollisionDetector::update(long ms) {
             (bullet_b != nullptr && enemy_a != nullptr)) {
           entities_to_delete.push_back(a);
           entities_to_delete.push_back(b);
+
+          auto explosion = entity_manager.createEntity();
+          auto transform =
+              entity_manager.addComponent<TransformComponent>(explosion);
+          auto explosion_component =
+              entity_manager.addComponent<ExplosionComponent>(explosion);
+          explosion_component->remaining = 10;
+          transform->transform.position = 0.5 * (position_a + position_b);
+          auto light = entity_manager.addComponent<LightComponent>(explosion);
+          SDL_Color colour = { 0xFF, 0xFF, 0xFF, 0xFF };
+          light->setParameters(colour, 300);
         } else if ((enemy_a != nullptr && player_b != nullptr) ||
                    (enemy_b != nullptr && player_a != nullptr)) {
           auto game_over = entity_manager.createEntity();

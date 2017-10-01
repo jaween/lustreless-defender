@@ -5,6 +5,7 @@
 #include "collidable_component.h"
 #include "collision_detector.h"
 #include "enemy_spawner.h"
+#include "explosion.h"
 #include "game_over.h"
 #include "gun_component.h"
 #include "input_component.h"
@@ -30,6 +31,7 @@ void Room::init() {
   auto movement_processor = engine.addProcessor<Movement>();
   auto enemy_spawner = engine.addProcessor<EnemySpawner>();
   engine.addProcessor<CollisionDetector>();
+  engine.addProcessor<Explosion>();
   engine.addRenderer<SimpleRenderer>();
   engine.addRenderer<GameOver>();
 

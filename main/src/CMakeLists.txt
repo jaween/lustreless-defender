@@ -20,6 +20,7 @@ set(LIBRARY_SOURCE
   ${CMAKE_CURRENT_SOURCE_DIR}/light_component.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/gun_component.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/collidable_component.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/explosion_component.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/processor.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/renderer.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/controlled_movement.cc
@@ -27,6 +28,7 @@ set(LIBRARY_SOURCE
   ${CMAKE_CURRENT_SOURCE_DIR}/player_shooter.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/enemy_spawner.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/collision_detector.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/explosion.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/simple_renderer.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/game_over.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/room.cc
