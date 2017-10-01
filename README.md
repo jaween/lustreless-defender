@@ -35,10 +35,11 @@ Usage
  1) Clone the SDL_Gpu GitHub repo:
     `git clone https://github.com/grimfang4/sdl-gpu.git sdl-gpu`
  2) Build and install SDL_Gpu by running:
-    ```cd sdl-gpu
+    ```
+    cd sdl-gpu
     cmake -G "Unix Makefiles"
-     make
-     sudo make install```
+    make
+    sudo make install```
  3) Run the build script:
     `./build.sh`
  4) Run the game (inside the root directory of the game):
