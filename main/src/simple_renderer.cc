@@ -62,13 +62,11 @@ void SimpleRenderer::render(long ms, GPU_Target* gpu_target) {
     auto transform = entity_manager.getComponent<TransformComponent>(entity);
     auto render = entity_manager.getComponent<RenderComponent>(entity);
     auto collidable = entity_manager.getComponent<CollidableComponent>(entity);
-    Shader* s = collidable == nullptr ? &(*shader) : &(*shader);
     render->getImage()->draw(
         gpu_target,
         transform->transform.position.x,
         transform->transform.position.y,
         transform->transform.rotation.angle(),
-        s);
-    //render->getImage()->setBlendMode(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        &(*shader));
   }
 }

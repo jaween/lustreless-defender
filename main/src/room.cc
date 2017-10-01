@@ -35,8 +35,8 @@ void Room::init() {
 
   movement_processor->setDimensions(engine.getWidth(), engine.getHeight());
   enemy_spawner->setImageNames({
-      "main/assets/sprites/turret.png",
-      "main/assets/sprites/non_convex.png"});
+      "main/assets/sprites/ufo.png",
+      "main/assets/sprites/crab.png"});
 
   // Component assemblages
   createTurret();
