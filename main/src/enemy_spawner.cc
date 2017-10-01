@@ -10,12 +10,12 @@
 EnemySpawner::EnemySpawner(EntityManager& entity_manager)
     : Processor(entity_manager) {
   last_spawn = SDL_GetTicks();
-  srand(0);
+  srand(time(NULL));
 }
 
 void EnemySpawner::update(long ms) {
   uint32_t time = SDL_GetTicks();
-  if (time - last_spawn > 2000) {
+  if (time - last_spawn > 600) {
     spawn();
     last_spawn = time;
   }
@@ -32,18 +32,18 @@ void EnemySpawner::spawn() {
   // TODO: Pass screen dimensions to processors
   int index = rand() % image_names.size();
   int x = 240 - rand() % 480;
-  float speed = 0.4f + (rand() % 5)/4.0f;
+  float speed = 0.9f + (rand() % 5)/4.0f;
 
   auto transform_component =
       entity_manager.addComponent<TransformComponent>(entity);
-  transform_component->transform.position.set(x, 240);
+  transform_component->transform.position.set(x, 270);
 
   auto render_component = entity_manager.addComponent<RenderComponent>(entity);
   render_component->setImage(image_names[index]);
 
   auto collidable_component =
       entity_manager.addComponent<CollidableComponent>(entity);
-  collidable_component->setRadius(10);
+  collidable_component->setRadius(25);
 
   entity_manager.addComponent<EnemyComponent>(entity);
 

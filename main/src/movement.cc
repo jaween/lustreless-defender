@@ -43,7 +43,7 @@ void Movement::update(long ms) {
 
     auto enemy_component = entity_manager.getComponent<EnemyComponent>(entity);
     if (enemy_component != nullptr) {
-      if (position.y < -height/2 + 100) {
+      if (position.y < -height/2 + 50) {
         auto game_over = entity_manager.createEntity();
         entity_manager.addComponent<GameOverComponent>(game_over);
       }

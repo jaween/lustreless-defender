@@ -41,7 +41,7 @@ void PlayerShooter::update(long ms) {
 
     uint32_t time = SDL_GetTicks();
     uint32_t delay = time - gun->last_shoot_time;
-    const uint32_t reload_time = 200;
+    const uint32_t reload_time = 300;
     if (key_states[SDL_SCANCODE_SPACE] && delay >= reload_time) {
       gun->last_shoot_time = time;
       Transform bullet_transform = gun->nodes.at(gun->last_used_index);
