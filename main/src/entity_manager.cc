@@ -58,3 +58,12 @@ void EntityManager::addRequirements(const Requirements& requirements) {
   std::set<Entity> entities;
   entities_which_match_requirements[requirements] = entities;
 }
+
+void EntityManager::clear() {
+  next_entity_id = 0;
+  entities.clear();
+  entity_components_map.clear();
+  entities_which_match_requirements.clear();
+  entity_capabilities.clear();
+  requirements_matched_by_entities.clear();
+}

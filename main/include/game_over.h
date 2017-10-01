@@ -13,6 +13,7 @@ class GameOver : public Renderer {
 
  private:
   std::unique_ptr<Image> text;
+  std::unique_ptr<Image> restart;
   bool started;
   float amount;
 };

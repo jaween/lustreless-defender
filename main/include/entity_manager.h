@@ -106,6 +106,7 @@ class EntityManager {
   std::vector<ComponentPtr> getComponents(Entity entity);
   std::set<Entity> getEntities(const Requirements& requirements);
   void addRequirements(const Requirements& requirements);
+  void clear();
 
  private:
   uint64_t next_entity_id;

@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "engine.h"
+#include "game_over_component.h"
 #include "room.h"
 
 const int16_t Engine::kScreenWidth = 480;
@@ -10,13 +11,13 @@ const int16_t Engine::kScreenHeight = 640;
 
 Engine::Engine(EntityManager& entity_manager)
     : entity_manager(entity_manager) {
-  std::clog << "Engine started" << std::endl;
+  std::clog << "Jaween's light engine started" << std::endl;
 }
 
 Engine::~Engine() {
   GPU_Quit();
 
-  std::clog << "Engine ended" << std::endl;
+  std::clog << "Jaween's light engine ended" << std::endl;
 }
 
 void Engine::run(Room& room) {
@@ -26,22 +27,39 @@ void Engine::run(Room& room) {
 
   room.init();
 
-  bool keepRunning = true;
-  while (keepRunning) {
+  bool keep_running = true;
+  bool game_over = false;
+  while (keep_running) {
     // Input handling
     SDL_Event event;
     while (SDL_PollEvent(&event) > 0) {
       switch (event.type) {
         case SDL_QUIT:
-          keepRunning = false;
+          keep_running = false;
           break;
+        case SDL_KEYDOWN:
+          if (event.key.keysym.sym == SDLK_RETURN && game_over) {
+            processors.clear();
+            renderers.clear();
+            entity_manager.clear();
+            room.init();
+            game_over = false;
+          }
       }
     }
 
-    room.update();
-    for (const auto& processor : processors) {
-      const long temp_update_ms = 16;
-      processor->update(temp_update_ms);
+    Requirements r = { GameOverComponent::getTypeId() };
+    auto game_over_entities = entity_manager.getEntities(r);
+    if (game_over_entities.size() != 0) {
+      game_over = true;
+    }
+
+    if (!game_over) {
+      room.update();
+      for (const auto& processor : processors) {
+        const long temp_update_ms = 16;
+        processor->update(temp_update_ms);
+      }
     }
 
     SDL_Color color = { 0x00, 0x00, 0x00, 0x00 };

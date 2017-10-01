@@ -5,6 +5,7 @@
 #include "collidable_component.h"
 #include "collision_detector.h"
 #include "enemy_spawner.h"
+#include "game_over.h"
 #include "gun_component.h"
 #include "input_component.h"
 #include "light_component.h"
@@ -43,7 +44,7 @@ void Room::init() {
   createBackgroundElements();
   createMisc();
 }
-#include "game_over_component.h"
+
 void Room::createTurret() {
   // Turret cannons
   Entity turret = entity_manager.createEntity();
