@@ -159,6 +159,8 @@ void Image::drawInternal(GPU_Target* gpu_target, float x, float y,
   if (blending_enabled) {
     glEnable(GL_BLEND);
     glBlendFunc(blend_sfactor, blend_dfactor);
+  } else {
+    glDisable(GL_BLEND);
   }
 
   const int index_count = 6;

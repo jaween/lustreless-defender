@@ -30,9 +30,9 @@ void GameOver::render(long ms, GPU_Target* gpu_target) {
     text->draw(
         gpu_target,
         0,
-        10 * sin(amount),
+        10 * sin(amount) + 100,
         text->getWidth() * (1 + 0.05 * sin(amount)),
-        text->getHeight() * (1 + 0.05 * sin(amount) + 100),
+        text->getHeight() * (1 + 0.05 * sin(amount)),
         0);
 
     restart->draw(gpu_target, 0, -100);

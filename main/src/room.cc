@@ -46,13 +46,28 @@ void Room::init() {
 }
 
 void Room::createTurret() {
+  // Turret base section
+  Entity turret_base = entity_manager.createEntity();
+
+  auto render_component =
+      entity_manager.addComponent<RenderComponent>(turret_base);
+  render_component->setImage("main/assets/sprites/turret_base.png");
+
+  auto transform_component =
+      entity_manager.addComponent<TransformComponent>(turret_base);
+  transform_component->transform.position.set(0,
+      -engine.getHeight() / 2);
+  transform_component->transform.rotation.set(0, 1);
+
+  entity_manager.addComponent<PlayerComponent>(turret_base);
+
   // Turret cannons
   Entity turret = entity_manager.createEntity();
 
-  auto render_component = entity_manager.addComponent<RenderComponent>(turret);
+  render_component = entity_manager.addComponent<RenderComponent>(turret);
   render_component->setImage("main/assets/sprites/turret.png");
 
-  auto transform_component =
+  transform_component =
       entity_manager.addComponent<TransformComponent>(turret);
   transform_component->transform.position.set(0,
       -engine.getHeight() / 2 + 50);
@@ -71,21 +86,6 @@ void Room::createTurret() {
   Transform right;
   right.position.set(70, -22);
   gun->setNodes({ left, right });
-
-  // Turret base section
-  Entity turret_base = entity_manager.createEntity();
-
-  render_component =
-      entity_manager.addComponent<RenderComponent>(turret_base);
-  render_component->setImage("main/assets/sprites/turret_base.png");
-
-  transform_component =
-      entity_manager.addComponent<TransformComponent>(turret_base);
-  transform_component->transform.position.set(0,
-      -engine.getHeight() / 2);
-  transform_component->transform.rotation.set(0, 1);
-
-  entity_manager.addComponent<PlayerComponent>(turret_base);
 }
 
 void Room::createBaseLights() {
@@ -97,8 +97,8 @@ void Room::createBaseLights() {
   auto transform_component =
       entity_manager.addComponent<TransformComponent>(left_light);
   transform_component->transform.position.set(
-      -engine.getWidth() / 2 + diameter / 7,
-      -engine.getHeight() / 2 + diameter / 9);
+      -engine.getWidth() / 2 + diameter / 5,
+      -engine.getHeight() / 2 + diameter / 12);
 
   auto light_component =
       entity_manager.addComponent<LightComponent>(left_light);
@@ -111,8 +111,8 @@ void Room::createBaseLights() {
   transform_component =
       entity_manager.addComponent<TransformComponent>(right_light);
   transform_component->transform.position.set(
-      engine.getWidth() / 2 - diameter / 7,
-      -engine.getHeight() / 2 + diameter / 9);
+      engine.getWidth() / 2 - diameter / 5,
+      -engine.getHeight() / 2 + diameter / 12);
 
   light_component =
       entity_manager.addComponent<LightComponent>(right_light);

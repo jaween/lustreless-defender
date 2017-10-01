@@ -57,11 +57,8 @@ void HighlightShader::setLights(
 
 void HighlightShader::activate() {
   Shader::activate();
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 }
 
 void HighlightShader::deactivate() {
   Shader::deactivate();
-  glDisable(GL_BLEND);
 }

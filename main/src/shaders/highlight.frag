@@ -26,7 +26,7 @@ out vec4 fragment_colour;
 
 void main() {
   // This starts higher than 0 for visual aesthetic purposes
-  float brightness = 0.9;
+  float brightness = 0.7;
   vec3 colour = vec3(0.0);
   // TODO(jaween): Pass in correct worldspace coordinates
   vec2 world_pos2D = vec2(world_position.x, 1.0 - world_position.y);
@@ -47,6 +47,5 @@ void main() {
   brightness = clamp(brightness, 0, 1);
 
   vec4 image_value = texture(image, texture_coordinate);
-  fragment_colour = vec4(colour.rgb * image_value.rgb,
-                         image_value.a * brightness);
+  fragment_colour = vec4(brightness * image_value.rgb * colour, image_value.a);
 }
