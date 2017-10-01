@@ -7,7 +7,7 @@ set(TEST_SOURCE
 )
 
 # Test target
-set(TEST_EXECUTABLE diffraction_test)
+set(TEST_EXECUTABLE game_test)
 add_executable(${TEST_EXECUTABLE} "${TEST_SOURCE}")
 set_target_properties(${TEST_EXECUTABLE} PROPERTIES LINKER_LANGUAGE CXX)
 

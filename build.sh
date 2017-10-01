@@ -3,4 +3,4 @@ mkdir build bin
 cd build
 cmake ..
 cd ..
-make -C build diffraction
+make -C build game

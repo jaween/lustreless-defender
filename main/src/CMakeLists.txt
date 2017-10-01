@@ -59,7 +59,7 @@ include_directories(${OPENGL_INCUDE_DIR} ${GLEW_INCLUDE_DIRS})
 target_link_libraries(${GAME_LIB} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
 
 # Game target
-set(MAIN_EXECUTABLE diffraction)
+set(MAIN_EXECUTABLE game)
 set(MAIN_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/main.cc)
 add_executable(${MAIN_EXECUTABLE} "${MAIN_SOURCE}")
 set_target_properties(${MAIN_EXECUTABLE} PROPERTIES LINKER_LANGUAGE CXX)
