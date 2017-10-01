@@ -31,10 +31,10 @@ void Movement::update(long ms) {
       radius = collidable_component->radius;
     }
 
-    if (position.x < -width/2 - radius ||
-        position.x >= width/2 + radius ||
-        position.y < -height/2 - radius ||
-        position.y >= height/2 + radius) {
+    if (position.x < -width/2 - radius * 2 ||
+        position.x >= width/2 + radius * 2 ||
+        position.y < -height/2 - radius * 2 ||
+        position.y >= height/2 + radius * 2) {
       entity_manager.deleteEntity(entity);
     }
   }

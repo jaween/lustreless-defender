@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <cmath>
 
+#include "bullet_component.h"
 #include "collidable_component.h"
 #include "gun_component.h"
 #include "input_component.h"
@@ -75,8 +76,10 @@ void PlayerShooter::createBullet(const Transform& entity_transform,
 
   auto collidable_component =
       entity_manager.addComponent<CollidableComponent>(bullet);
-  collidable_component->setRadius(70);
+  collidable_component->setRadius(30);
 
   auto render_component = entity_manager.addComponent<RenderComponent>(bullet);
   render_component->setImage("main/assets/sprites/bullet.png");
+
+  entity_manager.addComponent<BulletComponent>(bullet);
 }

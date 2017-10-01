@@ -10,3 +10,9 @@ Requirements Processor::getRequirements() const {
 Requirements Processor::getInterests() const {
   return interests;
 }
+
+std::vector<Entity> Processor::getEntitiesToDelete() {
+  std::vector<Entity> temp = entities_to_delete;
+  entities_to_delete.clear();
+  return temp;
+}

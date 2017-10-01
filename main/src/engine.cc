@@ -1,5 +1,6 @@
 #include "GL/glew.h"
 #include <iostream>
+#include <vector>
 
 #include "engine.h"
 #include "room.h"
@@ -49,6 +50,14 @@ void Engine::run(Room& room) {
     for (const auto& renderer : renderers) {
       const long temp_update_ms = 16;
       renderer->render(temp_update_ms, window);
+    }
+
+    // Removes the entities which have been marked to be deleted
+    for (const auto& processor : processors) {
+      const auto entities_to_delete = processor->getEntitiesToDelete();
+      for (const auto& entity : entities_to_delete) {
+        entity_manager.deleteEntity(entity);
+      }
     }
 
     GPU_Flip(window);

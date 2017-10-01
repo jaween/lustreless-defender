@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "collidable_component.h"
+#include "enemy_component.h"
 #include "enemy_spawner.h"
 #include "kinetic_component.h"
 #include "render_component.h"
@@ -31,7 +32,7 @@ void EnemySpawner::spawn() {
   // TODO: Pass screen dimensions to processors
   int index = rand() % image_names.size();
   int x = 240 - rand() % 480;
-  float speed = 0.1f + (rand() % 5)/6.0f;
+  float speed = 0.4f + (rand() % 5)/4.0f;
 
   auto transform_component =
       entity_manager.addComponent<TransformComponent>(entity);
@@ -42,7 +43,9 @@ void EnemySpawner::spawn() {
 
   auto collidable_component =
       entity_manager.addComponent<CollidableComponent>(entity);
-  collidable_component->setRadius(70);
+  collidable_component->setRadius(30);
+
+  entity_manager.addComponent<EnemyComponent>(entity);
 
   auto kinetic_component =
       entity_manager.addComponent<KineticComponent>(entity);

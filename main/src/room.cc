@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "collidable_component.h"
+#include "collision_detector.h"
 #include "enemy_spawner.h"
 #include "gun_component.h"
 #include "input_component.h"
@@ -26,6 +27,7 @@ void Room::init() {
   engine.addProcessor<PlayerShooter>();
   auto movement_processor = engine.addProcessor<Movement>();
   auto enemy_spawner = engine.addProcessor<EnemySpawner>();
+  engine.addProcessor<CollisionDetector>();
   engine.addRenderer<SimpleRenderer>();
   movement_processor->setDimensions(engine.getWidth(), engine.getHeight());
   enemy_spawner->setImageNames({
@@ -54,9 +56,9 @@ void Room::createTurret() {
 
   entity_manager.addComponent<InputComponent>(turret);
 
-  auto collidable_component =
+  /*auto collidable_component =
       entity_manager.addComponent<CollidableComponent>(turret);
-  collidable_component->setRadius(75);
+  collidable_component->setRadius(75);*/
 
   auto gun = entity_manager.addComponent<GunComponent>(turret);
   Transform left;
