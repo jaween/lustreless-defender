@@ -9,7 +9,7 @@ radiant projectiles.
 This is the source code for a submission to The Univesity of Adelaide CS Club's
 Make a Game Competition.
 
-**Team Name** Dining Philosophers
+**Team Name** The Dining Philosophers
 
 **Team Members** Jaween Ediriweera (a1647468)
 
