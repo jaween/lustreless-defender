@@ -43,7 +43,7 @@ void EnemySpawner::spawn() {
 
   auto collidable_component =
       entity_manager.addComponent<CollidableComponent>(entity);
-  collidable_component->setRadius(30);
+  collidable_component->setRadius(10);
 
   entity_manager.addComponent<EnemyComponent>(entity);
 

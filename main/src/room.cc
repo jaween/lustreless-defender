@@ -9,6 +9,7 @@
 #include "input_component.h"
 #include "light_component.h"
 #include "movement.h"
+#include "player_component.h"
 #include "player_shooter.h"
 #include "render_component.h"
 #include "room.h"
@@ -29,6 +30,8 @@ void Room::init() {
   auto enemy_spawner = engine.addProcessor<EnemySpawner>();
   engine.addProcessor<CollisionDetector>();
   engine.addRenderer<SimpleRenderer>();
+  engine.addRenderer<GameOver>();
+
   movement_processor->setDimensions(engine.getWidth(), engine.getHeight());
   enemy_spawner->setImageNames({
       "main/assets/sprites/turret.png",
@@ -40,7 +43,7 @@ void Room::init() {
   createBackgroundElements();
   createMisc();
 }
-
+#include "game_over_component.h"
 void Room::createTurret() {
   // Turret cannons
   Entity turret = entity_manager.createEntity();
@@ -55,10 +58,11 @@ void Room::createTurret() {
   transform_component->transform.rotation.set(0, 1);
 
   entity_manager.addComponent<InputComponent>(turret);
+  entity_manager.addComponent<PlayerComponent>(turret);
 
-  /*auto collidable_component =
+  auto collidable_component =
       entity_manager.addComponent<CollidableComponent>(turret);
-  collidable_component->setRadius(75);*/
+  collidable_component->setRadius(75);
 
   auto gun = entity_manager.addComponent<GunComponent>(turret);
   Transform left;
@@ -79,6 +83,8 @@ void Room::createTurret() {
   transform_component->transform.position.set(0,
       -engine.getHeight() / 2);
   transform_component->transform.rotation.set(0, 1);
+
+  entity_manager.addComponent<PlayerComponent>(turret_base);
 }
 
 void Room::createBaseLights() {

@@ -1,4 +1,6 @@
 #include "collidable_component.h"
+#include "enemy_component.h"
+#include "game_over_component.h"
 #include "kinetic_component.h"
 #include "movement.h"
 #include "transform_component.h"
@@ -24,6 +26,7 @@ void Movement::update(long ms) {
     Vector& position = transform_component->transform.position;
     position += kinetic_component->velocity;
 
+    // Destroys objects when they're outside of the screen
     float radius = 20;
     auto collidable_component =
         entity_manager.getComponent<CollidableComponent>(entity);
@@ -36,6 +39,14 @@ void Movement::update(long ms) {
         position.y < -height/2 - radius * 2 ||
         position.y >= height/2 + radius * 2) {
       entity_manager.deleteEntity(entity);
+    }
+
+    auto enemy_component = entity_manager.getComponent<EnemyComponent>(entity);
+    if (enemy_component != nullptr) {
+      if (position.y < -height/2 + 100) {
+        auto game_over = entity_manager.createEntity();
+        entity_manager.addComponent<GameOverComponent>(game_over);
+      }
     }
   }
 }

@@ -1,9 +1,11 @@
 #include <vector>
-#include <iostream>
 
 #include "bullet_component.h"
 #include "collidable_component.h"
 #include "collision_detector.h"
+#include "enemy_component.h"
+#include "game_over_component.h"
+#include "player_component.h"
 #include "transform_component.h"
 
 CollisionDetector::CollisionDetector(EntityManager& entity_manager)
@@ -23,6 +25,7 @@ void CollisionDetector::update(long ms) {
   }
 
   // TODO(jaween): Use quad-tree to cut down on this n^2 collision algorithm
+  // This is horrible
   for (unsigned int i = 0; i < list.size(); i++) {
     for (unsigned int j = i + 1; j < list.size(); j++) {
       Entity a = list[i];
@@ -36,14 +39,22 @@ void CollisionDetector::update(long ms) {
       auto radius_b =
           entity_manager.getComponent<CollidableComponent>(b)->radius;
 
-      // Destroy the other if only one is a bullet
-      auto bullet_a = entity_manager.getComponent<BulletComponent>(a);
-      auto bullet_b = entity_manager.getComponent<BulletComponent>(b);
-      if ((bullet_a == nullptr && bullet_b != nullptr) ||
-          (bullet_a != nullptr && bullet_b == nullptr)) {
-        if ((position_a - position_b).length() < radius_a + radius_b) {
+      if ((position_a - position_b).length() < radius_a + radius_b) {
+        // Enemy and bullet collisions. Enemy and player collisions.
+        auto bullet_a = entity_manager.getComponent<BulletComponent>(a);
+        auto bullet_b = entity_manager.getComponent<BulletComponent>(b);
+        auto enemy_a = entity_manager.getComponent<EnemyComponent>(a);
+        auto enemy_b = entity_manager.getComponent<EnemyComponent>(b);
+        auto player_a = entity_manager.getComponent<PlayerComponent>(a);
+        auto player_b = entity_manager.getComponent<PlayerComponent>(b);
+        if ((bullet_a != nullptr && enemy_b != nullptr) ||
+            (bullet_b != nullptr && enemy_a != nullptr)) {
           entities_to_delete.push_back(a);
           entities_to_delete.push_back(b);
+        } else if ((enemy_a != nullptr && player_b != nullptr) ||
+                   (enemy_b != nullptr && player_a != nullptr)) {
+          auto game_over = entity_manager.createEntity();
+          entity_manager.addComponent<GameOverComponent>(game_over);
         }
       }
     }
